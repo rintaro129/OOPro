@@ -1,3 +1,7 @@
 # Binaries and intermidiate debug files
 */obj
 */bin
+
+# VS Code
+
+*.vscode

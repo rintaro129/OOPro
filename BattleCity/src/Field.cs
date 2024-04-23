@@ -1,123 +1,130 @@
 namespace Game;
+
 public class Field
 {
+    public event EventHandler OnEntityCreated;
+    public event EventHandler OnEntityMoved;
+    public event EventHandler OnEntityDied;
     public int FieldSizeX { get; }
     public int FieldSizeY { get; }
-    public BaseEntity[,] Map {get; set;}
-    public Player Player {get;}
+    public BaseEntity[,] Map { get; set; }
+    public Player Player { get; }
+    public List<Tank> Tanks { get; }
+    public List<Bullet> Bullets { get; }
     public Field()
     {
-        Player = new Player {X = 0, Y = 0, ParentField = this};
+        Player = new Player { X = 0, Y = 0, Field = this };
+        Tanks = new List<Tank>();
+        Bullets = new List<Bullet>();
         FieldSizeX = Console.WindowWidth;
         FieldSizeY = Console.WindowHeight;
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
-        Map[0,0] = Player;
-        Map[1,0] = new Wall() {X = 1, Y = 0, ParentField = this};
+        Map[0, 0] = Player;
+        Map[1, 0] = new Wall() { X = 1, Y = 0, Field = this };
     }
-    public void DrawScene()
+
+    public void SubscribeToTank(Tank tank)
     {
-        for(int i = 0; i < FieldSizeX; i++) {
-            for(int j = 0; j < FieldSizeY; j++) {
-                if(Map[i, j] != null) {
-                    Console.SetCursorPosition(Map[i, j].X, Map[i, j].Y);
-                    Console.Write(Map[i, j].Sprite);
-                }
-            }
-        }
-        
+        tank.OnCreated += Tank_OnCreated;
+        tank.OnMoved += Tank_OnMoved;
+        tank.OnDied += Tank_OnDied;
     }
-}
-abstract public class BaseEntity
-{
-    public Field ParentField { get; set; }
-    public int X { get; set; }
-    public int Y { get; set; }
-    public char Sprite{get; set;}
-    public abstract bool CanMove();
-
-    public abstract bool IsSolid();
-}
-
-abstract public class Tank : BaseEntity
-{
-    public override bool CanMove() => true;
-    public override bool IsSolid() => true;
-    public void Move()
+    public void SubscribeToBullet(Bullet bullet)
     {
-        // Move
+        bullet.OnCreated += Bullet_OnCreated;
+        bullet.OnMoved += Bullet_OnMoved;
+        bullet.OnDied += Bullet_OnDied;
     }
-    protected int HealthPoints;
-    public int Direction { get; set; } = 0;
-}
-
-public class Player : Tank
-{
-    public Player() {
-        Sprite = 'P';
-    } 
-    public void MovePlayer(int deltaX, int deltaY)
+    public void SubscribeToWall(Wall wall)
     {
-        int oldX = X, oldY = Y;
-        if (X + deltaX >= 0 && X + deltaX < ParentField.FieldSizeX &&
-            Y + deltaY >= 0 && Y + deltaY < ParentField.FieldSizeY &&
-            (ParentField.Map[X + deltaX, Y + deltaY] == null || 
-            !ParentField.Map[X + deltaX, Y + deltaY].IsSolid())
-            )
+        wall.OnCreated += Wall_OnCreated;
+        wall.OnDied += Wall_OnDied;
+    }
+
+    private void Tank_OnCreated(object sender, EventArgs e)
+    {
+        if(sender is Tank entity)
         {
-            ParentField.Map[oldX, oldY] = null;
-            X += deltaX;
-            Y += deltaY;
-            ParentField.Map[X, Y] = this;
+            MapCreateEntity(entity);
+            Tanks.Add(entity);
+        } else throw new ArgumentException();
+    }
+    private void Tank_OnMoved(object sender, EventArgs e)
+    {
+        if(sender is Tank entity) {
+            MapMoveEntity(entity);
+        } else throw new ArgumentException();
+    }
+    private void Tank_OnDied(object sender, EventArgs e)
+    {
+        if(sender is Tank entity) {
+            MapDeleteEntity(entity);
+            Tanks.Remove(entity);
+        } else throw new ArgumentException();
+    }
+    private void Bullet_OnCreated(object sender, EventArgs e)
+    {
+        if(sender is Bullet entity) {
+            MapCreateEntity(entity);
+            Bullets.Add(entity);
+        } else throw new ArgumentException();
+    }
+    private void Bullet_OnMoved(object sender, EventArgs e)
+    {
+        if(sender is Bullet entity)
+        {
+            MapMoveEntity(entity);
+        } else throw new ArgumentException();
+    }
+    private void Bullet_OnDied(object sender, EventArgs e)
+    {
+        if(sender is Bullet entity) {
+            MapDeleteEntity(entity);
+            bulletsToDelete.Add(entity);
+        } else throw new ArgumentException();
+    }
+    private void Wall_OnCreated(object sender, EventArgs e)
+    {
+        if(sender is Wall entity) {
+            MapCreateEntity(entity);
+        } else throw new ArgumentException();
+    }
+    private void Wall_OnDied(object sender, EventArgs e)
+    {
+        if(sender is Wall entity)
+        {
+            MapDeleteEntity(entity);
+        } else throw new ArgumentException();
+    }
+
+    private void MapCreateEntity(BaseEntity entity)
+    {
+        Map[entity.X, entity.Y] = entity;
+    }
+    private void MapDeleteEntity(BaseEntity entity)
+    {
+        Map[entity.X, entity.Y] = null;
+    }
+
+    private void MapMoveEntity(BaseEntity entity)
+    {
+        Map[entity.X, entity.Y] = entity;
+        switch (entity.Direction)
+        {
+            case Direction.Down:
+                Map[entity.X, entity.Y-1] = null;
+                break;
+            case Direction.Up:
+                Map[entity.X, entity.Y+1] = null;
+                break;
+            case Direction.Left:
+                Map[entity.X+1, entity.Y] = null;
+                break;
+            case Direction.Right:
+                Map[entity.Y-1, entity.X] = null;
+                break;  
         }
     }
+
+    private List<Bullet> bulletsToDelete { get; } = [];
 }
-
-public class EnemyLvl1 : Tank
-{
-    public EnemyLvl1(int x, int y)
-    {
-        X = x;
-        Y = y;
-        HealthPoints = 1;
-    }
-}
-
-public class EnemyLvl2 : Tank
-{
-    public EnemyLvl2(int x, int y)
-    {
-        X = x;
-        Y = y;
-        HealthPoints = 2;
-    }
-}
-
-public class Prize : BaseEntity
-{
-    public override bool CanMove() => false;
-
-    public override bool IsSolid() => false;
-}
-
-public class Bullet : BaseEntity
-{
-    public override bool CanMove() => true;
-
-    public override bool IsSolid() => false;
-    public void Move()
-    {
-        // Move
-    }
-    public int Direction { get; set; } = 0;
-}
-
-public class Wall : BaseEntity
-{
-    public Wall() {
-        Sprite = '#';
-    }
-    public override bool CanMove() => false;
-
-    public override bool IsSolid() => true;
-}
-

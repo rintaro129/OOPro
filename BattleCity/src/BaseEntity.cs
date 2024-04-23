@@ -8,13 +8,14 @@ public abstract class BaseEntity
     public int X { get; set; }
     public int Y { get; set; }
     public Direction Direction { get; set; } = Direction.Up;
-    public virtual int HealthPointsMax { get; } = 1;
+    public virtual int HealthPointsMax { get; set; } = 1;
     public virtual int HealthPointsCurrent { get; set; } = 1;
     public virtual int SpeedTicks { get; set; } = 0;
     public abstract char GetSprite();
-    public virtual Color GetSpriteColor() => Color.White;
+    public virtual ConsoleColor GetSpriteColor() => ConsoleColor.White;
     public abstract bool CanMove();
     public abstract void Move(int xDifference, int yDifference);
+    public abstract void ProcessTurn();
     public abstract bool IsSolid();
     public abstract bool IsUnkillable();
     public abstract void Die();
@@ -31,11 +32,15 @@ public abstract class BaseEntity
         }
     }
 
-    protected bool CheckMovePosition(int xDifference, int yDifference)
-    {
-        return X + xDifference >= 0 && X + xDifference < Field.FieldSizeX &&
-                Y + yDifference >= 0 && Y + yDifference < Field.FieldSizeY &&
-                (Field.Map[X + xDifference, Y + yDifference] == null ||
-                 !Field.Map[X + xDifference, Y + yDifference].IsSolid());
-    }
+    protected bool CheckMovePosition(int xDifference, int yDifference) =>
+        !CheckPositionOutOfRange(X + xDifference, Y + yDifference) &&
+        !CheckPositionIsSolid(X + xDifference, Y + yDifference);
+
+    protected bool CheckPositionOutOfRange(int x, int y) =>
+        !(x >= 0 && x < Field.FieldSizeX &&
+        y >= 0 && y < Field.FieldSizeY);
+
+    protected bool CheckPositionIsSolid(int x, int y) =>
+        Field.Map[x, y] != null &&
+        Field.Map[x, y].IsSolid();
 }

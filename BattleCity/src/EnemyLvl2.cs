@@ -1,5 +1,7 @@
+/*
 namespace Game;
 
+//Not Implemented
 public class EnemyLvl2 : Tank
 {
     public EnemyLvl2(int x, int y)
@@ -9,3 +11,4 @@ public class EnemyLvl2 : Tank
         HealthPoints = 2;
     }
 }
+*/

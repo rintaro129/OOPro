@@ -1,4 +1,7 @@
+/*
 namespace Game;
+
+// Not Implemented
 
 public class EnemyLvl1 : Tank
 {
@@ -8,4 +11,4 @@ public class EnemyLvl1 : Tank
         Y = y;
         HealthPoints = 1;
     }
-}
+}*/

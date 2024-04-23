@@ -2,65 +2,34 @@ namespace Game;
 
 class Game
 {
-    private readonly int tickSeconds = 25;
-    Field Field { get; }
-
-    public Game()
-    {
-        Field = new Field();
-    }
-
+    private readonly int tickSeconds = 100;
+    private Field Field { get; set; }
+    
     public void Start()
     {
         Console.CursorVisible = false;
         Console.Clear();
-        Field = new Field()
-        
-        while (true)
+        Field = new Field();
+        Visuals visuals = new Visuals(Field);
+        Field.Start();
+        int i = 0;
+        while (Field.Status == "Playing")
         {
-            UpdateGameState();
+            if (i % 1 == 0)
+            {
+                Field.ProcessBullets();
+            }
+            if (i % 2 == 0)
+            {
+                Field.Player.ProcessTurn();
+                Field.ProcessTanks();
+            }
+            
 
-            // // Render game
-            // RenderGame();
-
-            int status = HandleKeyPress();
-
-            if (status == 0)
-                return;
-
-            Console.Clear();
-            Field.DrawScene();
+            i++;
             Thread.Sleep(tickSeconds);
         }
-    }
-
-    private int HandleKeyPress()
-    {
-        int status = 1;
-        if (Console.KeyAvailable)
-        {
-            ConsoleKeyInfo key = Console.ReadKey(true);
-
-            switch (key.Key)
-            {
-                case ConsoleKey.UpArrow:
-                    Field.Player.MovePlayer(0, -1);
-                    break;
-                case ConsoleKey.DownArrow:
-                    Field.Player.MovePlayer(0, 1);
-                    break;
-                case ConsoleKey.LeftArrow:
-                    Field.Player.MovePlayer(-1, 0);
-                    break;
-                case ConsoleKey.RightArrow:
-                    Field.Player.MovePlayer(1, 0);
-                    break;
-                case ConsoleKey.Escape:
-                    status = 0;
-                    break;
-            }
-        }
-
-        return status;
+        Console.SetCursorPosition(0,Field.FieldSizeY);
+        Console.WriteLine(Field.Status);
     }
 }

@@ -1,4 +1,4 @@
-namespace Game;
+namespace BattleCity;
 
 public enum Direction
 {

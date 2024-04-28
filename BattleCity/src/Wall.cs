@@ -1,4 +1,4 @@
-namespace Game;
+namespace BattleCity;
 
 public class Wall : BaseEntity
 {
@@ -19,14 +19,17 @@ public class Wall : BaseEntity
         Field.SubscribeToWall(this);
         OnCreated?.Invoke(this, EventArgs.Empty);
     }
+
     public override void Move(int xDifference, int yDifference)
     {
         Console.WriteLine("Don't even try... You can not...");
     }
+
     public override void ProcessTurn()
     {
         Console.WriteLine("Don't even try... You can not...");
     }
+
     public override void Die()
     {
         OnDied?.Invoke(this, EventArgs.Empty);

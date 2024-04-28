@@ -1,4 +1,4 @@
-namespace Game;
+namespace BattleCity;
 
 public class Visuals
 {
@@ -18,6 +18,7 @@ public class Visuals
             Console.ResetColor();
         }
     }
+
     private void Field_OnEntityDeleted(object sender, EventArgs e)
     {
         if (e is VisualEntityEventArgs args)

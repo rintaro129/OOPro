@@ -1,10 +1,10 @@
-namespace Game;
+namespace BattleCity;
 
 class Game
 {
     private readonly int tickSeconds = 100;
     private Field Field { get; set; }
-    
+
     public void Start()
     {
         Console.CursorVisible = false;
@@ -19,17 +19,19 @@ class Game
             {
                 Field.ProcessBullets();
             }
+
             if (i % 2 == 0)
             {
                 Field.Player.ProcessTurn();
                 Field.ProcessTanks();
             }
-            
+
 
             i++;
             Thread.Sleep(tickSeconds);
         }
-        Console.SetCursorPosition(0,Field.FieldSizeY);
+
+        Console.SetCursorPosition(0, Field.FieldSizeY);
         Console.WriteLine(Field.Status);
     }
 }

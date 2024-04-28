@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Game;
+namespace BattleCity;
 
 public class Player : Tank
 {
@@ -10,13 +10,14 @@ public class Player : Tank
     public override ConsoleColor GetSpriteColor() => ConsoleColor.Green;
 
     public Player(Field field, int x, int y)
-    {   
+    {
         X = x;
         Y = y;
         Field = field;
         Field.SubscribeToPlayer(this);
         OnCreated?.Invoke(this, EventArgs.Empty);
     }
+
     public override void Move(int xDifference, int yDifference)
     {
         if (!CheckMovePosition(xDifference, yDifference)) return;
@@ -32,10 +33,12 @@ public class Player : Tank
         };
         OnMoved?.Invoke(this, EventArgs.Empty);
     }
+
     public override void Die()
     {
         OnDied?.Invoke(this, EventArgs.Empty);
     }
+
     public override void ProcessTurn()
     {
         if (Console.KeyAvailable)

@@ -1,5 +1,4 @@
-
-namespace Game;
+namespace BattleCity;
 
 public class Bullet : BaseEntity
 {
@@ -21,23 +20,25 @@ public class Bullet : BaseEntity
         Tank = tank;
         Field = tank.Field;
         Direction = Tank.Direction;
-        (int x, int y) = setCoordinates(tank);
-        X = x;
-        Y = y;
+        int xDifference, yDifference;
+        (xDifference, yDifference) = DirectionUtils.ToInts(Tank.Direction);
+        X = Tank.X + xDifference;
+        Y = Tank.Y + yDifference;
         Field.SubscribeToBullet(this);
         OnCreated?.Invoke(this, EventArgs.Empty);
     }
 
     public override void Move(int xDifference, int yDifference)
     {
-        int x = X +xDifference;
+        int x = X + xDifference;
         int y = Y + yDifference;
         if (CheckPositionExploding(x, y))
         {
             TakeDamage();
-            if(!CheckPositionOutOfRange(x, y)) Field.Map[x, y].TakeDamage();
+            if (!CheckPositionOutOfRange(x, y)) Field.Map[x, y].TakeDamage();
             return;
         }
+
         X = x;
         Y = y;
         OnMoved?.Invoke(this, EventArgs.Empty);
@@ -48,49 +49,12 @@ public class Bullet : BaseEntity
         OnDied?.Invoke(this, EventArgs.Empty);
     }
 
-    private (int, int) setCoordinates(Tank tank)
-    {
-        int x = tank.X;
-        int y = tank.Y;
-        switch (tank.Direction)
-        {
-            case Direction.Down:
-                y = tank.Y + 1;
-                break;
-            case Direction.Up:
-                y = tank.Y - 1;
-                break;
-            case Direction.Right:
-                x = tank.X + 1;
-                break;
-            case Direction.Left:
-                x = tank.X - 1;
-                break;
-        }
-
-        return (x, y);
-    }
 
     public override void ProcessTurn()
     {
         if (HealthPointsCurrent <= 0) return;
-        switch (Direction)
-        {
-            case Direction.Down:
-                Move(0, 1);
-                break;
-            case Direction.Up:
-                Move(0, -1);
-                break;
-            case Direction.Right:
-                Move(1, 0);
-                break;
-            case Direction.Left:
-                Move(-1, 0);
-                break;
-        }
+        Move(Direction);
     }
 
     private bool CheckPositionExploding(int x, int y) => CheckPositionOutOfRange(x, y) || CheckPositionIsSolid(x, y);
-
 }

@@ -9,3 +9,4 @@ public class Prize : BaseEntity
 
     public override bool IsSolid() => false;
 }*/
+

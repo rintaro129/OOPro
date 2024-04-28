@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Game;
+namespace BattleCity;
 
 public class VisualEntityEventArgs : EventArgs
 {
@@ -8,6 +8,7 @@ public class VisualEntityEventArgs : EventArgs
     public ConsoleColor Color { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
+
     public VisualEntityEventArgs(BaseEntity entity)
     {
         Sprite = entity.GetSprite();
@@ -23,5 +24,4 @@ public class VisualEntityEventArgs : EventArgs
         X = x;
         Y = y;
     }
-    
 }

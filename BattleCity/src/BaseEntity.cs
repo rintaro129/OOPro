@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Game;
+namespace BattleCity;
 
 public abstract class BaseEntity
 {
@@ -15,11 +15,19 @@ public abstract class BaseEntity
     public virtual ConsoleColor GetSpriteColor() => ConsoleColor.White;
     public abstract bool CanMove();
     public abstract void Move(int xDifference, int yDifference);
+
+    public void Move(Direction direction)
+    {
+        int xDifference, yDifference;
+        (xDifference, yDifference) = DirectionUtils.ToInts(direction);
+        Move(xDifference, yDifference);
+    }
+
     public abstract void ProcessTurn();
     public abstract bool IsSolid();
     public abstract bool IsUnkillable();
     public abstract void Die();
-    
+
     public void TakeDamage(int damageTaken = 1)
     {
         if (!IsUnkillable())
@@ -38,7 +46,7 @@ public abstract class BaseEntity
 
     protected bool CheckPositionOutOfRange(int x, int y) =>
         !(x >= 0 && x < Field.FieldSizeX &&
-        y >= 0 && y < Field.FieldSizeY);
+          y >= 0 && y < Field.FieldSizeY);
 
     protected bool CheckPositionIsSolid(int x, int y) =>
         Field.Map[x, y] != null &&

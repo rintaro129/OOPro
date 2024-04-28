@@ -1,4 +1,5 @@
-﻿namespace Game;
+﻿namespace BattleCity;
+
 class Program
 {
     static void Main(string[] args)

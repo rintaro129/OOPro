@@ -11,6 +11,8 @@ public class Field
     public List<Tank> Tanks { get; }
     public List<Bullet> Bullets { get; }
     public string Status { get; set; }
+    private List<Bullet> BulletsToDelete { get; } = [];
+    private List<Tank> TanksToDelete { get; } = [];
 
     public Field()
     {
@@ -81,7 +83,11 @@ public class Field
         {
             tank.ProcessTurn();
         }
-
+        foreach (Tank tank in TanksToDelete)
+        {
+            Tanks.Remove(tank);
+        }
+        TanksToDelete.Clear();
         if (Tanks.Count == 0)
         {
             Status = "Tanks are defeated!";
@@ -152,7 +158,7 @@ public class Field
     {
         if(sender is Tank entity) {
             MapDeleteEntity(entity);
-            Tanks.Remove(entity);
+            TanksToDelete.Add(entity);
         } else throw new ArgumentException();
     }
     private void Bullet_OnCreated(object sender, EventArgs e)
@@ -226,6 +232,4 @@ public class Field
         Map[x, y] = null;
         OnEntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity.GetSprite(), entity.GetSpriteColor(), x, y));
     }
-    
-    private List<Bullet> BulletsToDelete { get; } = [];
 }

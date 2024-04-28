@@ -96,9 +96,9 @@ public class Tank : BaseEntity
     }
     public override void ProcessTurn()
     {
-        
+        if (HealthPointsCurrent <= 0) return;
         Random random = new Random();
-        int moveDirection = random.Next(5); // Generates a random number between 0 and 4
+        int moveDirection = random.Next(5); 
 
         switch (moveDirection)
         {

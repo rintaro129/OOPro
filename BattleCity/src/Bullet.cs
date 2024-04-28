@@ -73,6 +73,7 @@ public class Bullet : BaseEntity
 
     public override void ProcessTurn()
     {
+        if (HealthPointsCurrent <= 0) return;
         switch (Direction)
         {
             case Direction.Down:

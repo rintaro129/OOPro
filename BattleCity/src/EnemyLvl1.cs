@@ -9,5 +9,6 @@ public class EnemyLvl1(Field field, int x, int y) : Tank(field, x, y)
         int randomNumber = random.Next(5);
         Move((Direction)randomNumber);
         Shoot();
+        WasDamaged = false;
     }
 }

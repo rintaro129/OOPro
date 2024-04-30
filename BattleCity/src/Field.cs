@@ -70,6 +70,9 @@ public class Field
                             case 'B':
                                 Map[col, row] = new Bomb(this, col, row);
                                 break;
+                            case 's':
+                                Map[col, row] = new Spawn(this, col, row);
+                                break;
                         }
                     }
 
@@ -134,7 +137,7 @@ public class Field
         if (sender is BaseEntity entity)
         {
             Map[entity.X, entity.Y] = entity;
-            if (entity.CanMove()) EntitiesToAdd.Add(entity);
+            if (entity.CanProcessTurn()) EntitiesToAdd.Add(entity);
             EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
         }
         else throw new ArgumentException();
@@ -145,9 +148,10 @@ public class Field
         if (sender is BaseEntity entity)
         {
             Map[entity.X, entity.Y] = null;
-            if (entity.CanMove()) EntitiesToDelete.Add(entity);
+            if (entity.CanProcessTurn()) EntitiesToDelete.Add(entity);
             if (entity is Player) Status = "Player Died :(";
             EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
+            if (entity is Tank or Obstacle) Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
         }
         else throw new ArgumentException();
     }

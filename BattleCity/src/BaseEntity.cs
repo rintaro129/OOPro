@@ -42,7 +42,7 @@ public abstract class BaseEntity
     public virtual int HealthPointsMax { get; set; } = 1;
     public virtual int HealthPointsCurrent { get; set; } = 1;
     public virtual int SpeedTicks { get; set; } = 0;
-    public abstract bool CanMove();
+    public abstract bool CanProcessTurn();
     public abstract void Move(int xDifference, int yDifference);
 
     public void Move(Direction direction)
@@ -56,7 +56,7 @@ public abstract class BaseEntity
     public abstract bool IsSolid();
     public abstract bool IsUnkillable();
 
-    public void TakeDamage(int damageTaken = 1)
+    public virtual void TakeDamage(int damageTaken = 1)
     {
         if (!IsUnkillable())
         {

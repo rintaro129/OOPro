@@ -45,6 +45,27 @@ public class VisualEntityEventArgs : EventArgs
             case Bomb:
                 Sprite = 'o';
                 break;
+            case Explosion:
+                Sprite = '\u256c';
+                break;
+            case Spawn spawn:
+                switch (spawn.TicksPassed % 4)
+                {
+                    case 0:
+                        Sprite = '-';
+                        break;
+                    case 1:
+                        Sprite = '/';
+                        break;
+                    case 2:
+                        Sprite = '|';
+                        break;
+                    case 3:
+                        Sprite = '\\';
+                        break;
+                }
+
+                break;
         }
     }
 
@@ -52,14 +73,14 @@ public class VisualEntityEventArgs : EventArgs
     {
         switch (entity)
         {
-            case Player:
-                Color = ConsoleColor.Green;
+            case EnemyLvl3:
+                Color = ConsoleColor.Red;
                 break;
             case EnemyLvl2:
                 Color = ConsoleColor.DarkBlue;
                 break;
-            case EnemyLvl3:
-                Color = ConsoleColor.Red;
+            case Player:
+                Color = ConsoleColor.Green;
                 break;
             case BrickWall:
                 Color = ConsoleColor.DarkRed;
@@ -70,6 +91,12 @@ public class VisualEntityEventArgs : EventArgs
             case Bomb:
                 Color = ConsoleColor.Black;
                 break;
+            case Explosion:
+                Color = ConsoleColor.Black;
+                break;
+            case Spawn:
+                Color = ConsoleColor.DarkMagenta;
+                break;
         }
     }
 
@@ -77,8 +104,14 @@ public class VisualEntityEventArgs : EventArgs
     {
         switch (entity)
         {
+            case Tank tank:
+                if (tank.WasDamaged) BackgroundColor = ConsoleColor.Red;
+                break;
             case Bomb:
                 BackgroundColor = ConsoleColor.Yellow;
+                break;
+            case Explosion:
+                BackgroundColor = ConsoleColor.DarkYellow;
                 break;
         }
     }

@@ -4,7 +4,7 @@ public class Bullet : BaseEntity
 {
     public Tank Tank { get; set; }
 
-    public override bool CanMove() => true;
+    public override bool CanProcessTurn() => true;
     public override bool IsSolid() => true;
 
     public override bool IsUnkillable() => false;

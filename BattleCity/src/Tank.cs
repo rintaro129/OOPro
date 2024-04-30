@@ -2,9 +2,10 @@ namespace BattleCity;
 
 public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
 {
-    public override bool CanMove() => true;
+    public override bool CanProcessTurn() => true;
     public override bool IsSolid() => true;
     public override bool IsUnkillable() => false;
+    public bool WasDamaged { get; set; }
     public override int SpeedTicks { get; set; } = 8;
 
     public override void Move(int xDifference, int yDifference)
@@ -41,7 +42,12 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
         Bullet.Died += HandleBulletDied;
         IsShooting = true;
     }
-
+    public override void TakeDamage(int damageTaken = 1)
+    {
+        WasDamaged = true;
+        OnUpdated(EventArgs.Empty);
+        base.TakeDamage(damageTaken);
+    }
     private void HandleBulletDied(object? sender, EventArgs e)
     {
         IsShooting = false;

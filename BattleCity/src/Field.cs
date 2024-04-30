@@ -2,255 +2,141 @@ namespace BattleCity;
 
 public class Field
 {
-    public event EventHandler OnEntityCreated;
-    public event EventHandler OnEntityDeleted;
-    public int FieldSizeX { get; }
-    public int FieldSizeY { get; }
-    public BaseEntity[,] Map { get; set; }
+    public event EventHandler? OnEntityCreated;
+    public event EventHandler? OnEntityDeleted;
+    public event EventHandler? LevelStarting;
+    public int FieldSizeX { get; set; }
+    public int FieldSizeY { get; set; }
+    public BaseEntity?[,] Map { get; set; }
     public Player Player { get; set; }
-    public List<Tank> Tanks { get; }
-    public List<Bullet> Bullets { get; }
+    public List<BaseEntity> Entities { get; } = [];
     public string Status { get; set; }
-    private List<Bullet> BulletsToDelete { get; } = [];
-    private List<Tank> TanksToDelete { get; } = [];
+    private List<BaseEntity> EntitiesToDelete { get; } = [];
+    private List<BaseEntity> EntitiesToAdd { get; } = [];
 
-    public Field()
+    public void Start(string option)
     {
-        Tanks = new List<Tank>();
-        Bullets = new List<Bullet>();
-        FieldSizeX = 35;
-        FieldSizeY = 16;
-        Map = new BaseEntity[FieldSizeX, FieldSizeY];
-    }
-
-    public void Start()
-    {
-        string filePath = "../../../res/Level1.lvl";
-        // Check if the file exists
-        if (!File.Exists(filePath))
+        LevelStarting?.Invoke(this, EventArgs.Empty);
+        if (option == "RANDOM")
         {
-            Console.WriteLine("File not found.");
-            return;
+            throw new NotImplementedException();
         }
-
-        // Read the contents of the file character by character
-        using (StreamReader reader = new StreamReader(filePath))
+        else
         {
-            int row = 0;
-            string line;
-            while ((line = reader.ReadLine()) != null)
+            string filePath = option;
+            // Check if the file exists
+            if (!File.Exists(filePath))
             {
-                for (int col = 0; col < line.Length; col++)
+                Console.WriteLine("File not found.");
+                return;
+            }
+
+            FieldSizeX = 35;
+            FieldSizeY = 16;
+            Map = new BaseEntity[FieldSizeX, FieldSizeY];
+            Entities.Clear();
+            // Read the contents of the file character by character
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                int row = 0;
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    char c = line[col];
-
-                    switch (c)
+                    for (int col = 0; col < line.Length; col++)
                     {
-                        // Check if the character is P, W, or T
-                        case 'P':
-                            Player = new Player(this, col, row);
-                            break;
-                        case 'W':
-                            new Wall(this, col, row);
-                            break;
-                        case 'T':
-                            Tanks.Add(new Tank(this, col, row));
-                            break;
+                        char c = line[col];
+                        switch (c)
+                        {
+                            // Check if the character is P, W, or 1
+                            case 'P':
+                                Player = new Player(this, col, row);
+                                Map[col, row] = Player;
+                                break;
+                            case 'W':
+                                Map[col, row] = new Obstacle(this, col, row);
+                                break;
+                            case '1':
+                                Map[col, row] = new EnemyLvl1(this, col, row);
+                                break;
+                        }
                     }
+                    row++;
                 }
-
-                row++;
+            }
+            Entities.AddRange(EntitiesToAdd);
+            EntitiesToAdd.Clear();
+            Status = "Playing";
+        }
+    }
+    public void ProcessEntities(int tick)
+    {
+        foreach (BaseEntity entity in Entities)
+        {
+            if(tick % entity.SpeedTicks == 0) entity.ProcessTurn();
+        }
+        
+        foreach (BaseEntity entity in EntitiesToDelete)
+        {
+            Entities.Remove(entity);
+        }
+        Entities.AddRange(EntitiesToAdd);
+        EntitiesToAdd.Clear();
+        EntitiesToDelete.Clear();
+        bool enemiesAreDefeated = true;
+        foreach (BaseEntity entity in Entities)
+        {
+            if (entity is Tank && entity is not BattleCity.Player)
+            {
+                enemiesAreDefeated = false;
+                break;
             }
         }
 
-        Status = "Playing";
+        if (enemiesAreDefeated) Status = "Enemies are defeated!";
     }
 
-    public void ProcessBullets()
+    public void SubscribeToEntity(BaseEntity entity)
     {
-        foreach (Bullet bullet in Bullets)
+        entity.Created += HandleEntityCreated;
+        entity.Moved += HandleEntityMoved;
+        entity.Died += HandleEntityDied;
+    }
+    private void HandleEntityCreated(object? sender, EventArgs e)
+    {
+        if (sender is BaseEntity entity)
         {
-            bullet.ProcessTurn();
+            Map[entity.X, entity.Y] = entity;
+            if (entity.CanMove()) EntitiesToAdd.Add(entity);
+            OnEntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
         }
+        else throw new AggregateException();
+    }
 
-        foreach (Bullet bullet in BulletsToDelete)
+    private void HandleEntityDied(object? sender, EventArgs e)
+    {
+        if (sender is BaseEntity entity)
         {
-            Bullets.Remove(bullet);
+            Map[entity.X, entity.Y] = null;
+            if (entity.CanMove()) EntitiesToDelete.Add(entity);
+            if (entity is Player) Status = "Player Died :(";
+            OnEntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
         }
-
-        BulletsToDelete.Clear();
+        else throw new AggregateException();
     }
 
-    public void ProcessTanks()
+    private void HandleEntityMoved(object? sender, EventArgs e)
     {
-        foreach (Tank tank in Tanks)
+        if (sender is BaseEntity entity)
         {
-            tank.ProcessTurn();
+            Map[entity.X, entity.Y] = entity;
+            OnEntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+            int xInvertDifference, yInvertDifference;
+            (xInvertDifference, yInvertDifference) = DirectionUtils.ToInts(DirectionUtils.Invert(entity.Direction));
+            int x = entity.X + xInvertDifference;
+            int y = entity.Y + yInvertDifference;
+            Map[x, y] = null;
+            OnEntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity.GetSprite(), entity.GetSpriteColor(), x, y));
         }
-
-        foreach (Tank tank in TanksToDelete)
-        {
-            Tanks.Remove(tank);
-        }
-
-        TanksToDelete.Clear();
-        if (Tanks.Count == 0)
-        {
-            Status = "Tanks are defeated!";
-        }
-    }
-
-    public void SubscribeToTank(Tank tank)
-    {
-        tank.OnCreated += Tank_OnCreated;
-        tank.OnMoved += Tank_OnMoved;
-        tank.OnDied += Tank_OnDied;
-    }
-
-    public void SubscribeToBullet(Bullet bullet)
-    {
-        bullet.OnCreated += Bullet_OnCreated;
-        bullet.OnMoved += Bullet_OnMoved;
-        bullet.OnDied += Bullet_OnDied;
-    }
-
-    public void SubscribeToWall(Wall wall)
-    {
-        wall.OnCreated += Wall_OnCreated;
-        wall.OnDied += Wall_OnDied;
-    }
-
-    public void SubscribeToPlayer(Player player)
-    {
-        player.OnCreated += Player_OnCreated;
-        player.OnMoved += Player_OnMoved;
-        player.OnDied += Player_OnDied;
-    }
-
-    private void Player_OnCreated(object sender, EventArgs e)
-    {
-        if (sender is Player entity)
-        {
-            MapCreateEntity(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Player_OnMoved(object sender, EventArgs e)
-    {
-        if (sender is Player entity)
-        {
-            MapMoveEntity(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Player_OnDied(object sender, EventArgs e)
-    {
-        if (sender is Player entity)
-        {
-            MapDeleteEntity(entity);
-            Status = "Player Died :(";
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Tank_OnCreated(object sender, EventArgs e)
-    {
-        if (sender is Tank entity)
-        {
-            MapCreateEntity(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Tank_OnMoved(object sender, EventArgs e)
-    {
-        if (sender is Tank entity)
-        {
-            MapMoveEntity(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Tank_OnDied(object sender, EventArgs e)
-    {
-        if (sender is Tank entity)
-        {
-            MapDeleteEntity(entity);
-            TanksToDelete.Add(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Bullet_OnCreated(object sender, EventArgs e)
-    {
-        if (sender is Bullet entity)
-        {
-            MapCreateEntity(entity);
-            Bullets.Add(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Bullet_OnMoved(object sender, EventArgs e)
-    {
-        if (sender is Bullet entity)
-        {
-            MapMoveEntity(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Bullet_OnDied(object sender, EventArgs e)
-    {
-        if (sender is Bullet entity)
-        {
-            MapDeleteEntity(entity);
-            BulletsToDelete.Add(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Wall_OnCreated(object sender, EventArgs e)
-    {
-        if (sender is Wall entity)
-        {
-            MapCreateEntity(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void Wall_OnDied(object sender, EventArgs e)
-    {
-        if (sender is Wall entity)
-        {
-            MapDeleteEntity(entity);
-        }
-        else throw new ArgumentException();
-    }
-
-    private void MapCreateEntity(BaseEntity entity)
-    {
-        Map[entity.X, entity.Y] = entity;
-        OnEntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
-    }
-
-    private void MapDeleteEntity(BaseEntity entity)
-    {
-        Map[entity.X, entity.Y] = null;
-        OnEntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
-    }
-
-    private void MapMoveEntity(BaseEntity entity)
-    {
-        Map[entity.X, entity.Y] = entity;
-        OnEntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
-        int xInvertDifference, yInvertDifference;
-        (xInvertDifference, yInvertDifference) = DirectionUtils.ToInts(DirectionUtils.Invert(entity.Direction));
-        int x = entity.X + xInvertDifference;
-        int y = entity.Y + yInvertDifference;
-        Map[x, y] = null;
-        OnEntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity.GetSprite(), entity.GetSpriteColor(), x, y));
+        else throw new AggregateException();
     }
 }

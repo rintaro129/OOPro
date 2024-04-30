@@ -2,10 +2,6 @@ namespace BattleCity;
 
 public class Bullet : BaseEntity
 {
-    public event EventHandler OnCreated;
-    public event EventHandler OnMoved;
-    public event EventHandler OnDied;
-
     public Tank Tank { get; set; }
 
     public override bool CanMove() => true;
@@ -15,17 +11,10 @@ public class Bullet : BaseEntity
     public override bool IsUnkillable() => false;
     public override int SpeedTicks { get; set; } = 1;
 
-    public Bullet(Tank tank)
+    public Bullet(Field field, int x, int y, Tank tank) : base(field, x, y)
     {
         Tank = tank;
-        Field = tank.Field;
         Direction = Tank.Direction;
-        int xDifference, yDifference;
-        (xDifference, yDifference) = DirectionUtils.ToInts(Tank.Direction);
-        X = Tank.X + xDifference;
-        Y = Tank.Y + yDifference;
-        Field.SubscribeToBullet(this);
-        OnCreated?.Invoke(this, EventArgs.Empty);
     }
 
     public override void Move(int xDifference, int yDifference)
@@ -41,20 +30,12 @@ public class Bullet : BaseEntity
 
         X = x;
         Y = y;
-        OnMoved?.Invoke(this, EventArgs.Empty);
+        OnMoved(EventArgs.Empty);
     }
-
-    public override void Die()
-    {
-        OnDied?.Invoke(this, EventArgs.Empty);
-    }
-
-
     public override void ProcessTurn()
     {
         if (HealthPointsCurrent <= 0) return;
         Move(Direction);
     }
-
     private bool CheckPositionExploding(int x, int y) => CheckPositionOutOfRange(x, y) || CheckPositionIsSolid(x, y);
 }

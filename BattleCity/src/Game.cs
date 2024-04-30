@@ -3,35 +3,23 @@ namespace BattleCity;
 class Game
 {
     private readonly int tickSeconds = 100;
-    private Field Field { get; set; }
 
     public void Start()
     {
         Console.CursorVisible = false;
         Console.Clear();
-        Field = new Field();
-        Visuals visuals = new Visuals(Field);
-        Field.Start();
+        Field field = new Field();
+        Visuals visuals = new Visuals(field);
+        field.Start("../../../res/Level1.lvl");
         int i = 0;
-        while (Field.Status == "Playing")
+        while (field.Status == "Playing")
         {
-            if (i % 1 == 0)
-            {
-                Field.ProcessBullets();
-            }
-
-            if (i % 2 == 0)
-            {
-                Field.Player.ProcessTurn();
-                Field.ProcessTanks();
-            }
-
-
+            field.ProcessEntities(i);
             i++;
             Thread.Sleep(tickSeconds);
         }
 
-        Console.SetCursorPosition(0, Field.FieldSizeY);
-        Console.WriteLine(Field.Status);
+        Console.SetCursorPosition(0, field.FieldSizeY);
+        Console.WriteLine(field.Status);
     }
 }

@@ -6,9 +6,14 @@ public class Visuals
     {
         field.OnEntityCreated += Field_OnEntityCreated;
         field.OnEntityDeleted += Field_OnEntityDeleted;
+        field.LevelStarting += HandleLevelStarting;
     }
 
-    private void Field_OnEntityCreated(object sender, EventArgs e)
+    private void HandleLevelStarting(object? sender, EventArgs e)
+    {
+        Console.Clear();
+    }
+    private void Field_OnEntityCreated(object? sender, EventArgs e)
     {
         if (e is VisualEntityEventArgs args)
         {
@@ -19,7 +24,7 @@ public class Visuals
         }
     }
 
-    private void Field_OnEntityDeleted(object sender, EventArgs e)
+    private void Field_OnEntityDeleted(object? sender, EventArgs e)
     {
         if (e is VisualEntityEventArgs args)
         {

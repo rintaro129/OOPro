@@ -1,46 +1,11 @@
-using System.Drawing;
 
 namespace BattleCity;
 
-public class Player : Tank
+public class Player(Field field, int x, int y) : Tank(field, x, y)
 {
-    public new event EventHandler OnCreated;
-    public new event EventHandler OnMoved;
-    public new event EventHandler OnDied;
-    public override ConsoleColor GetSpriteColor() => ConsoleColor.Green;
-
-    public Player(Field field, int x, int y)
-    {
-        X = x;
-        Y = y;
-        Field = field;
-        Field.SubscribeToPlayer(this);
-        OnCreated?.Invoke(this, EventArgs.Empty);
-    }
-
-    public override void Move(int xDifference, int yDifference)
-    {
-        if (!CheckMovePosition(xDifference, yDifference)) return;
-        X += xDifference;
-        Y += yDifference;
-        Direction = xDifference switch
-        {
-            0 when yDifference == -1 => Direction.Up,
-            0 when yDifference == 1 => Direction.Down,
-            -1 when yDifference == 0 => Direction.Left,
-            1 when yDifference == 0 => Direction.Right,
-            _ => Direction
-        };
-        OnMoved?.Invoke(this, EventArgs.Empty);
-    }
-
-    public override void Die()
-    {
-        OnDied?.Invoke(this, EventArgs.Empty);
-    }
-
     public override void ProcessTurn()
     {
+        if (HealthPointsCurrent <= 0) return;
         if (Console.KeyAvailable)
         {
             ConsoleKeyInfo key = Console.ReadKey(true);

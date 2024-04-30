@@ -1,10 +1,35 @@
-using System.Drawing;
-
 namespace BattleCity;
 
 public abstract class BaseEntity
 {
-    public Field Field { get; set; }
+    protected BaseEntity(Field field, int x, int y)
+    {
+        X = x;
+        Y = y;
+        Field = field;
+        Field.SubscribeToEntity(this);
+        OnCreated(EventArgs.Empty);
+    }
+    public event EventHandler? Created;
+    public event EventHandler? Moved;
+    public event EventHandler? Died;
+
+    protected void OnCreated(EventArgs e)
+    {
+        Created?.Invoke(this, e);
+    }
+
+    protected void OnMoved(EventArgs e)
+    {
+        Moved?.Invoke(this, e);
+    }
+
+    protected void OnDied(EventArgs e)
+    {
+        Died?.Invoke(this, e);
+    }
+
+    public Field Field { get; }
     public int X { get; set; }
     public int Y { get; set; }
     public Direction Direction { get; set; } = Direction.Up;
@@ -26,7 +51,6 @@ public abstract class BaseEntity
     public abstract void ProcessTurn();
     public abstract bool IsSolid();
     public abstract bool IsUnkillable();
-    public abstract void Die();
 
     public void TakeDamage(int damageTaken = 1)
     {
@@ -35,7 +59,7 @@ public abstract class BaseEntity
             HealthPointsCurrent -= damageTaken;
             if (HealthPointsCurrent <= 0)
             {
-                Die();
+                OnDied(EventArgs.Empty);
             }
         }
     }
@@ -48,7 +72,9 @@ public abstract class BaseEntity
         !(x >= 0 && x < Field.FieldSizeX &&
           y >= 0 && y < Field.FieldSizeY);
 
-    protected bool CheckPositionIsSolid(int x, int y) =>
-        Field.Map[x, y] != null &&
-        Field.Map[x, y].IsSolid();
+    protected bool CheckPositionIsSolid(int x, int y)
+    {
+        return Field.Map[x, y] != null &&
+               Field.Map[x, y].IsSolid();
+    }
 }

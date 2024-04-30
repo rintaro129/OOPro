@@ -1,4 +1,3 @@
-
 namespace BattleCity;
 
 public class Player(Field field, int x, int y) : Tank(field, x, y)

@@ -10,21 +10,22 @@ public abstract class BaseEntity
         Field.SubscribeToEntity(this);
         OnCreated(EventArgs.Empty);
     }
+
     public event EventHandler? Created;
     public event EventHandler? Moved;
     public event EventHandler? Died;
 
-    protected void OnCreated(EventArgs e)
+    protected virtual void OnCreated(EventArgs e)
     {
         Created?.Invoke(this, e);
     }
 
-    protected void OnMoved(EventArgs e)
+    protected virtual void OnMoved(EventArgs e)
     {
         Moved?.Invoke(this, e);
     }
 
-    protected void OnDied(EventArgs e)
+    protected virtual void OnDied(EventArgs e)
     {
         Died?.Invoke(this, e);
     }
@@ -36,8 +37,6 @@ public abstract class BaseEntity
     public virtual int HealthPointsMax { get; set; } = 1;
     public virtual int HealthPointsCurrent { get; set; } = 1;
     public virtual int SpeedTicks { get; set; } = 0;
-    public abstract char GetSprite();
-    public virtual ConsoleColor GetSpriteColor() => ConsoleColor.White;
     public abstract bool CanMove();
     public abstract void Move(int xDifference, int yDifference);
 

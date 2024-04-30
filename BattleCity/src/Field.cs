@@ -2,8 +2,8 @@ namespace BattleCity;
 
 public class Field
 {
-    public event EventHandler? OnEntityCreated;
-    public event EventHandler? OnEntityDeleted;
+    public event EventHandler? EntityCreated;
+    public event EventHandler? EntityDeleted;
     public event EventHandler? LevelStarting;
     public int FieldSizeX { get; set; }
     public int FieldSizeY { get; set; }
@@ -53,32 +53,48 @@ public class Field
                                 Map[col, row] = Player;
                                 break;
                             case 'W':
-                                Map[col, row] = new Obstacle(this, col, row);
+                                Map[col, row] = new BrickWall(this, col, row);
                                 break;
                             case '1':
                                 Map[col, row] = new EnemyLvl1(this, col, row);
                                 break;
+                            case '2':
+                                Map[col, row] = new EnemyLvl2(this, col, row);
+                                break;
+                            case '3':
+                                Map[col, row] = new EnemyLvl3(this, col, row);
+                                break;
+                            case 'S':
+                                Map[col, row] = new SteelWall(this, col, row);
+                                break;
+                            case 'B':
+                                Map[col, row] = new Bomb(this, col, row);
+                                break;
                         }
                     }
+
                     row++;
                 }
             }
+
             Entities.AddRange(EntitiesToAdd);
             EntitiesToAdd.Clear();
             Status = "Playing";
         }
     }
+
     public void ProcessEntities(int tick)
     {
         foreach (BaseEntity entity in Entities)
         {
-            if(tick % entity.SpeedTicks == 0) entity.ProcessTurn();
+            if (tick % entity.SpeedTicks == 0) entity.ProcessTurn();
         }
-        
+
         foreach (BaseEntity entity in EntitiesToDelete)
         {
             Entities.Remove(entity);
         }
+
         Entities.AddRange(EntitiesToAdd);
         EntitiesToAdd.Clear();
         EntitiesToDelete.Clear();
@@ -101,13 +117,14 @@ public class Field
         entity.Moved += HandleEntityMoved;
         entity.Died += HandleEntityDied;
     }
+
     private void HandleEntityCreated(object? sender, EventArgs e)
     {
         if (sender is BaseEntity entity)
         {
             Map[entity.X, entity.Y] = entity;
             if (entity.CanMove()) EntitiesToAdd.Add(entity);
-            OnEntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+            EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
         }
         else throw new AggregateException();
     }
@@ -119,7 +136,7 @@ public class Field
             Map[entity.X, entity.Y] = null;
             if (entity.CanMove()) EntitiesToDelete.Add(entity);
             if (entity is Player) Status = "Player Died :(";
-            OnEntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
+            EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
         }
         else throw new AggregateException();
     }
@@ -129,13 +146,13 @@ public class Field
         if (sender is BaseEntity entity)
         {
             Map[entity.X, entity.Y] = entity;
-            OnEntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+            EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
             int xInvertDifference, yInvertDifference;
             (xInvertDifference, yInvertDifference) = DirectionUtils.ToInts(DirectionUtils.Invert(entity.Direction));
             int x = entity.X + xInvertDifference;
             int y = entity.Y + yInvertDifference;
             Map[x, y] = null;
-            OnEntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity.GetSprite(), entity.GetSpriteColor(), x, y));
+            EntityDeleted?.Invoke(this, new VisualEntityEventArgs(x, y));
         }
         else throw new AggregateException();
     }

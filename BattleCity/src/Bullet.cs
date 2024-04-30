@@ -7,7 +7,6 @@ public class Bullet : BaseEntity
     public override bool CanMove() => true;
     public override bool IsSolid() => true;
 
-    public override char GetSprite() => '·';
     public override bool IsUnkillable() => false;
     public override int SpeedTicks { get; set; } = 1;
 
@@ -32,10 +31,12 @@ public class Bullet : BaseEntity
         Y = y;
         OnMoved(EventArgs.Empty);
     }
+
     public override void ProcessTurn()
     {
         if (HealthPointsCurrent <= 0) return;
         Move(Direction);
     }
+
     private bool CheckPositionExploding(int x, int y) => CheckPositionOutOfRange(x, y) || CheckPositionIsSolid(x, y);
 }

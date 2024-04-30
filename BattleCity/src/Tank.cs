@@ -6,17 +6,6 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
     public override bool IsSolid() => true;
     public override bool IsUnkillable() => false;
     public override int SpeedTicks { get; set; } = 2;
-    public override char GetSprite()
-    {
-        return Direction switch
-        {
-            Direction.Up => 'Ʌ',
-            Direction.Down => 'V',
-            Direction.Left => '<',
-            Direction.Right => '>',
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
 
     public override void Move(int xDifference, int yDifference)
     {
@@ -24,7 +13,7 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
         X += xDifference;
         Y += yDifference;
         Direction = DirectionUtils.ToDirection(xDifference, yDifference);
-       OnMoved(EventArgs.Empty);
+        OnMoved(EventArgs.Empty);
     }
 
     public Bullet? Bullet { get; set; }
@@ -41,7 +30,7 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
             if (!CheckPositionOutOfRange(x, y)) Field.Map[x, y].TakeDamage();
             return;
         }
-        
+
         Bullet = new Bullet(Field, X + xDifference, Y + yDifference, this);
         Bullet.Died += HandleBulletDied;
         IsShooting = true;

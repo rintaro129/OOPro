@@ -4,8 +4,8 @@ public class Visuals
 {
     public Visuals(Field field)
     {
-        field.OnEntityCreated += Field_OnEntityCreated;
-        field.OnEntityDeleted += Field_OnEntityDeleted;
+        field.EntityCreated += HandleEntityCreated;
+        field.EntityDeleted += HandleEntityDeleted;
         field.LevelStarting += HandleLevelStarting;
     }
 
@@ -13,18 +13,20 @@ public class Visuals
     {
         Console.Clear();
     }
-    private void Field_OnEntityCreated(object? sender, EventArgs e)
+
+    private void HandleEntityCreated(object? sender, EventArgs e)
     {
         if (e is VisualEntityEventArgs args)
         {
             Console.ForegroundColor = args.Color;
+            Console.BackgroundColor = args.BackgroundColor;
             Console.SetCursorPosition(args.X, args.Y);
             Console.Write(args.Sprite);
             Console.ResetColor();
         }
     }
 
-    private void Field_OnEntityDeleted(object? sender, EventArgs e)
+    private void HandleEntityDeleted(object? sender, EventArgs e)
     {
         if (e is VisualEntityEventArgs args)
         {

@@ -8,7 +8,7 @@ public class Bullet : BaseEntity
     public override bool IsSolid() => true;
 
     public override bool IsUnkillable() => false;
-    public override int SpeedTicks { get; set; } = 1;
+    public override int SpeedTicks { get; set; } = 4;
 
     public Bullet(Field field, int x, int y, Tank tank) : base(field, x, y)
     {

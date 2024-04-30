@@ -13,6 +13,7 @@ public abstract class BaseEntity
 
     public event EventHandler? Created;
     public event EventHandler? Moved;
+    public event EventHandler? Updated;
     public event EventHandler? Died;
 
     protected virtual void OnCreated(EventArgs e)
@@ -24,11 +25,15 @@ public abstract class BaseEntity
     {
         Moved?.Invoke(this, e);
     }
-
+    protected virtual void OnUpdated(EventArgs e)
+    {
+        Updated?.Invoke(this, e);
+    }
     protected virtual void OnDied(EventArgs e)
     {
         Died?.Invoke(this, e);
     }
+    
 
     public Field Field { get; }
     public int X { get; set; }

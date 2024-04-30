@@ -83,6 +83,16 @@ public class Field
         }
     }
 
+    public void Play(int speedMs)
+    {
+        int i = 0;
+        while (Status == "Playing")
+        {
+            ProcessEntities(i);
+            i++;
+            Thread.Sleep(speedMs);
+        }
+    }
     public void ProcessEntities(int tick)
     {
         foreach (BaseEntity entity in Entities)
@@ -115,6 +125,7 @@ public class Field
     {
         entity.Created += HandleEntityCreated;
         entity.Moved += HandleEntityMoved;
+        entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
     }
 
@@ -126,7 +137,7 @@ public class Field
             if (entity.CanMove()) EntitiesToAdd.Add(entity);
             EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
         }
-        else throw new AggregateException();
+        else throw new ArgumentException();
     }
 
     private void HandleEntityDied(object? sender, EventArgs e)
@@ -138,7 +149,7 @@ public class Field
             if (entity is Player) Status = "Player Died :(";
             EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
         }
-        else throw new AggregateException();
+        else throw new ArgumentException();
     }
 
     private void HandleEntityMoved(object? sender, EventArgs e)
@@ -154,6 +165,15 @@ public class Field
             Map[x, y] = null;
             EntityDeleted?.Invoke(this, new VisualEntityEventArgs(x, y));
         }
-        else throw new AggregateException();
+        else throw new ArgumentException();
+    }
+
+    private void HandleEntityUpdated(object? sender, EventArgs e)
+    {
+        if (sender is BaseEntity entity)
+        {
+            EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+        }
+        else throw new ArgumentException();
     }
 }

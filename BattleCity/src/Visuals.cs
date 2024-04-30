@@ -1,20 +1,20 @@
 namespace BattleCity;
 
-public class Visuals
+public static class Visuals
 {
-    public Visuals(Field field)
+    public static void ConnectVisuals(Field field)
     {
         field.EntityCreated += HandleEntityCreated;
         field.EntityDeleted += HandleEntityDeleted;
         field.LevelStarting += HandleLevelStarting;
     }
 
-    private void HandleLevelStarting(object? sender, EventArgs e)
+    private static void HandleLevelStarting(object? sender, EventArgs e)
     {
         Console.Clear();
     }
 
-    private void HandleEntityCreated(object? sender, EventArgs e)
+    private static void HandleEntityCreated(object? sender, EventArgs e)
     {
         if (e is VisualEntityEventArgs args)
         {
@@ -26,7 +26,7 @@ public class Visuals
         }
     }
 
-    private void HandleEntityDeleted(object? sender, EventArgs e)
+    private static void HandleEntityDeleted(object? sender, EventArgs e)
     {
         if (e is VisualEntityEventArgs args)
         {

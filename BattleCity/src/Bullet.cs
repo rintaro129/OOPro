@@ -23,7 +23,15 @@ public class Bullet : BaseEntity
         if (CheckPositionExploding(x, y))
         {
             TakeDamage();
-            if (!CheckPositionOutOfRange(x, y)) Field.Map[x, y].TakeDamage();
+            if (!CheckPositionOutOfRange(x, y))
+            {
+                if (Field.Map[x, y] is Tank { HealthPointsCurrent: 1 } && Tank is Player player)
+                {
+                    player.ScoreAdd(1);
+                }
+                Field.Map[x, y].TakeDamage();
+                
+            }
             return;
         }
 
@@ -37,6 +45,5 @@ public class Bullet : BaseEntity
         if (HealthPointsCurrent <= 0) return;
         Move(Direction);
     }
-
-    private bool CheckPositionExploding(int x, int y) => CheckPositionOutOfRange(x, y) || CheckPositionIsSolid(x, y);
+    
 }

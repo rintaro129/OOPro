@@ -18,6 +18,10 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
             return;
         }
         if (!CheckMovePosition(xDifference, yDifference)) return;
+        if (Field.Map[X + xDifference, Y + yDifference] is Prize prize)
+        {
+            prize.GrantPrize(this);
+        }
         X += xDifference;
         Y += yDifference;
         OnMoved(EventArgs.Empty);
@@ -34,7 +38,14 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
         int x = X + xDifference, y = Y + yDifference;
         if (CheckPositionExploding(x, y))
         {
-            if (!CheckPositionOutOfRange(x, y)) Field.Map[x, y].TakeDamage();
+            if (!CheckPositionOutOfRange(x, y))
+            {
+                if (Field.Map[x, y] is Tank { HealthPointsCurrent: 1 } && this is Player player)
+                {
+                    player.ScoreAdd(1);
+                }
+                Field.Map[x, y].TakeDamage();
+            }
             return;
         }
 
@@ -53,6 +64,5 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
         IsShooting = false;
         Bullet = null;
     }
-
-    private bool CheckPositionExploding(int x, int y) => CheckPositionOutOfRange(x, y) || CheckPositionIsSolid(x, y);
+    
 }

@@ -54,13 +54,14 @@ public abstract class BaseEntity
 
     public abstract void ProcessTurn();
     public abstract bool IsSolid();
+    public bool IsExplosive() => true;
     public abstract bool IsUnkillable();
 
     public virtual void TakeDamage(int damageTaken = 1)
     {
         if (!IsUnkillable())
         {
-            HealthPointsCurrent -= damageTaken;
+            HealthAdd(-damageTaken);
             if (HealthPointsCurrent <= 0)
             {
                 OnDied(EventArgs.Empty);
@@ -68,6 +69,10 @@ public abstract class BaseEntity
         }
     }
 
+    public virtual void HealthAdd(int healthToAdd)
+    {
+        HealthPointsCurrent += healthToAdd;
+    }
     protected bool CheckMovePosition(int xDifference, int yDifference) =>
         !CheckPositionOutOfRange(X + xDifference, Y + yDifference) &&
         !CheckPositionIsSolid(X + xDifference, Y + yDifference);
@@ -76,9 +81,16 @@ public abstract class BaseEntity
         !(x >= 0 && x < Field.FieldSizeX &&
           y >= 0 && y < Field.FieldSizeY);
 
-    protected bool CheckPositionIsSolid(int x, int y)
+    private bool CheckPositionIsSolid(int x, int y)
     {
         return Field.Map[x, y] != null &&
                Field.Map[x, y].IsSolid();
     }
+
+    private bool CheckPositionIsExplosive(int x, int y)
+    {
+        return Field.Map[x, y] != null &&
+               Field.Map[x, y].IsExplosive();
+    }
+    protected bool CheckPositionExploding(int x, int y) => CheckPositionOutOfRange(x, y) || CheckPositionIsExplosive(x, y);
 }

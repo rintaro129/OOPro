@@ -1,9 +1,28 @@
 namespace BattleCity;
 
-public class Player(Field field, int x, int y) : Tank(field, x, y)
+public class Player : Tank 
 {
+    public Player(Field field, int x, int y, int score) : base(field, x, y)
+    {
+        Score = score;
+        StatsUpdated?.Invoke(this, EventArgs.Empty);
+    }
+    public event EventHandler? StatsUpdated;
     public override int HealthPointsCurrent { get; set; } = 2;
     public override int HealthPointsMax { get; set; } = 2;
+    public int Score { get; set; }
+
+    public void ScoreAdd(int value)
+    {
+        Score += value;
+        StatsUpdated?.Invoke(this, EventArgs.Empty);
+    }
+
+    public override void HealthAdd(int healthToAdd)
+    {
+        base.HealthAdd(healthToAdd);
+        StatsUpdated?.Invoke(this, EventArgs.Empty);
+    }
 
     public override void ProcessTurn()
     {

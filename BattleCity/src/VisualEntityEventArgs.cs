@@ -9,9 +9,11 @@ public class VisualEntityEventArgs : EventArgs
     public ConsoleColor BackgroundColor { get; set; } = ConsoleColor.Black;
     public int X { get; set; }
     public int Y { get; set; }
+    public BaseEntity Entity { get; }
 
     public VisualEntityEventArgs(BaseEntity entity)
     {
+        Entity = entity;
         SetSprite(entity);
         SetColor(entity);
         SetBackgroundColor(entity);
@@ -66,6 +68,15 @@ public class VisualEntityEventArgs : EventArgs
                 }
 
                 break;
+            case PrizeHealth:
+                Sprite = '+';
+                break;
+            case PrizeSpeed:
+                Sprite = '\u2b4d';
+                break;
+            case PrizeFreeze:
+                Sprite = '\u2746';
+                break;
         }
     }
 
@@ -97,6 +108,15 @@ public class VisualEntityEventArgs : EventArgs
             case Spawn:
                 Color = ConsoleColor.DarkMagenta;
                 break;
+            case PrizeHealth:
+                Color = ConsoleColor.Red;
+                break;
+            case PrizeSpeed:
+                Color = ConsoleColor.Yellow;
+                break;
+            case PrizeFreeze:
+                Color = ConsoleColor.Blue;
+                break;
         }
     }
 
@@ -112,6 +132,9 @@ public class VisualEntityEventArgs : EventArgs
                 break;
             case Explosion:
                 BackgroundColor = ConsoleColor.DarkYellow;
+                break;
+            case Prize:
+                BackgroundColor = ConsoleColor.White;
                 break;
         }
     }

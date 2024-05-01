@@ -1,22 +1,36 @@
+using System.Text.RegularExpressions;
+
 namespace BattleCity;
 
 public class Field
 {
+    public Field()
+    {
+        ConsoleIo.ConnectVisuals(this);
+    }
+
     public event EventHandler? EntityCreated;
     public event EventHandler? EntityDeleted;
     public event EventHandler? LevelStarting;
+    public event EventHandler? LevelStarted;
+    public string Name { get; set; }
     public int FieldSizeX { get; set; }
     public int FieldSizeY { get; set; }
     public BaseEntity?[,] Map { get; set; }
     public Player Player { get; set; }
     public List<BaseEntity> Entities { get; } = [];
     public string Status { get; set; }
+    public int EntitiesToSpawnCount { get; set; }
+    public int FreezeLeftForTicks { get; set; }
+    public Tank FreezeExceptionTank { get; set; }
+    private const int SpawnTicks = 400;
     private List<BaseEntity> EntitiesToDelete { get; } = [];
     private List<BaseEntity> EntitiesToAdd { get; } = [];
 
-    public void Start(string option)
+    public void Start(string option, int score = 0)
     {
         LevelStarting?.Invoke(this, EventArgs.Empty);
+        Name = Path.GetFileNameWithoutExtension(option);
         if (option == "RANDOM")
         {
             throw new NotImplementedException();
@@ -49,7 +63,7 @@ public class Field
                         {
                             // Check if the character is P, W, or 1
                             case 'P':
-                                Player = new Player(this, col, row);
+                                Player = new Player(this, col, row, score);
                                 Map[col, row] = Player;
                                 break;
                             case 'W':
@@ -71,8 +85,24 @@ public class Field
                                 Map[col, row] = new Bomb(this, col, row);
                                 break;
                             case 's':
-                                Map[col, row] = new Spawn(this, col, row);
+                                Map[col, row] = new PrizeSpeed(this, col, row);
                                 break;
+                            case 'h':
+                                Map[col, row] = new PrizeHealth(this, col, row);
+                                break;
+                            case 'f':
+                                Map[col, row] = new PrizeFreeze(this, col, row);
+                                break;
+                            case 'n':
+                                string subString = line.Substring(col + 1, line.Length - col - 1);
+                                if (int.TryParse(subString, out int result))
+                                {
+                                    EntitiesToSpawnCount = result;
+                                    break;
+                                }
+
+                                Console.WriteLine("Unable to parse substring to int.");
+                                throw new Exception();
                         }
                     }
 
@@ -83,6 +113,7 @@ public class Field
             Entities.AddRange(EntitiesToAdd);
             EntitiesToAdd.Clear();
             Status = "Playing";
+            LevelStarted?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -93,14 +124,38 @@ public class Field
         {
             ProcessEntities(i);
             i++;
+            FreezeLeftForTicks= int.Max(0, FreezeLeftForTicks-1);
             Thread.Sleep(speedMs);
         }
     }
+
     public void ProcessEntities(int tick)
     {
         foreach (BaseEntity entity in Entities)
         {
+            if (FreezeLeftForTicks > 0 && entity is Tank tank && tank != FreezeExceptionTank) continue;
             if (tick % entity.SpeedTicks == 0) entity.ProcessTurn();
+        }
+
+        if (tick % SpawnTicks == 0)
+        {
+            List<Tuple<int, int>> freeTiles = [];
+            for (int i = 0; i < FieldSizeX; i++)
+            {
+                for (int j = 0; j < FieldSizeY; j++)
+                {
+                    if (Map[i, j] == null) freeTiles.Add(new Tuple<int, int>(i, j));
+                }
+            }
+
+            if (freeTiles.Count != 0)
+            {
+                Random random = new Random();
+                int randomNumber = random.Next(freeTiles.Count);
+                EntitiesToSpawnCount--;
+                Map[freeTiles[randomNumber].Item1, freeTiles[randomNumber].Item2] = new Spawn(this,
+                    freeTiles[randomNumber].Item1, freeTiles[randomNumber].Item2);
+            }
         }
 
         foreach (BaseEntity entity in EntitiesToDelete)
@@ -121,7 +176,7 @@ public class Field
             }
         }
 
-        if (enemiesAreDefeated) Status = "Enemies are defeated!";
+        if (enemiesAreDefeated && EntitiesToSpawnCount == 0) Status = "Enemies are defeated!";
     }
 
     public void SubscribeToEntity(BaseEntity entity)
@@ -130,6 +185,8 @@ public class Field
         entity.Moved += HandleEntityMoved;
         entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
+        if(entity is Player player) ConsoleIo.SubscribeToPlayer(player);
+        if(entity is Spawn spawn) ConsoleIo.SubscribeToSpawn(spawn);
     }
 
     private void HandleEntityCreated(object? sender, EventArgs e)

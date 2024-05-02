@@ -1,7 +1,8 @@
 # Binaries and intermidiate debug files
 */obj
 */bin
-
-# VS Code
-
+# Local Leaderboard
+*/res/Scoreboard.json
+# VS Code and Rider
+*.idea
 *.vscode

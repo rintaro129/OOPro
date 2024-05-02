@@ -20,40 +20,7 @@ public static class ConsoleIo
         spawn.SpawnTriggered += HandleSpawnTriggered;
         spawn.Created += HandleSpawnsCountUpdate;
     }
-
-    public static void DrawLevelName(Field field, string option)
-    {
-        Console.SetCursorPosition(0, field.FieldSizeY);
-        Console.WriteLine(Path.GetFileNameWithoutExtension(option));
-    }
-
-    public static string[] GetLevelPaths()
-    {
-        string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        DirectoryInfo currentDirectoryInfo = new DirectoryInfo(currentDirectory);
-        if (currentDirectory == null)
-        {
-            Console.WriteLine("Could not find the resource directory");
-            Thread.Sleep(1000);
-            return [];
-        }
-        currentDirectoryInfo = currentDirectoryInfo.Parent.Parent.Parent;
-        if (currentDirectory == null)
-        {
-            Console.WriteLine("Could not find the resource directory");
-            Thread.Sleep(1000);
-            return [];
-        }
-        currentDirectoryInfo = new DirectoryInfo(Path.Combine(currentDirectoryInfo.FullName, "res"));
-        if (currentDirectory == null)
-        {
-            Console.WriteLine("Could not find the resource directory");
-            Thread.Sleep(1000);
-            return [];
-        }
-        FileInfo[] files = currentDirectoryInfo.GetFiles("*.lvl");
-        return files.Select(file => file.FullName).ToArray();
-    }
+    
 
     private static void HandleLevelStarted(object? sender, EventArgs e)
     {

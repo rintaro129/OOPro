@@ -31,90 +31,159 @@ public class Field
     {
         LevelStarting?.Invoke(this, EventArgs.Empty);
         Name = Path.GetFileNameWithoutExtension(option);
-        if (option == "RANDOM")
+        string filePath = option;
+        if (!File.Exists(filePath))
         {
-            throw new NotImplementedException();
+            Console.WriteLine("File not found.");
+            return;
         }
-        else
+
+        int maxRowLength = 0;
+        int maxColumnLength = 0;
+
+        using (StreamReader reader = new StreamReader(filePath))
         {
-            string filePath = option;
-            // Check if the file exists
-            if (!File.Exists(filePath))
+            string line;
+            while ((line = reader.ReadLine()) != null)
             {
-                Console.WriteLine("File not found.");
-                return;
-            }
-
-            FieldSizeX = 35;
-            FieldSizeY = 16;
-            Map = new BaseEntity[FieldSizeX, FieldSizeY];
-            Entities.Clear();
-            // Read the contents of the file character by character
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                int row = 0;
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                // Calculate row length
+                int rowLength = line.Length;
+                if (rowLength > maxRowLength)
                 {
-                    for (int col = 0; col < line.Length; col++)
+                    maxRowLength = rowLength;
+                }
+
+                maxColumnLength++;
+            }
+        }
+
+        FieldSizeX = maxRowLength;
+        FieldSizeY = maxColumnLength - 1;
+        Map = new BaseEntity[FieldSizeX, FieldSizeY];
+        Entities.Clear();
+
+        using (StreamReader reader = new StreamReader(filePath))
+        {
+            int row = 0;
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                for (int col = 0; col < line.Length; col++)
+                {
+                    char c = line[col];
+                    switch (c)
                     {
-                        char c = line[col];
-                        switch (c)
-                        {
-                            // Check if the character is P, W, or 1
-                            case 'P':
-                                Player = new Player(this, col, row, score);
-                                Map[col, row] = Player;
+                        // Check if the character is P, W, or 1
+                        case 'P':
+                            Player = new Player(this, col, row, score);
+                            Map[col, row] = Player;
+                            break;
+                        case 'W':
+                            Map[col, row] = new BrickWall(this, col, row);
+                            break;
+                        case '1':
+                            Map[col, row] = new EnemyLvl1(this, col, row);
+                            break;
+                        case '2':
+                            Map[col, row] = new EnemyLvl2(this, col, row);
+                            break;
+                        case '3':
+                            Map[col, row] = new EnemyLvl3(this, col, row);
+                            break;
+                        case 'S':
+                            Map[col, row] = new SteelWall(this, col, row);
+                            break;
+                        case 'B':
+                            Map[col, row] = new Bomb(this, col, row);
+                            break;
+                        case 's':
+                            Map[col, row] = new PrizeSpeed(this, col, row);
+                            break;
+                        case 'h':
+                            Map[col, row] = new PrizeHealth(this, col, row);
+                            break;
+                        case 'f':
+                            Map[col, row] = new PrizeFreeze(this, col, row);
+                            break;
+                        case 'n':
+                            string subString = line.Substring(col + 1, line.Length - col - 1);
+                            if (int.TryParse(subString, out int result))
+                            {
+                                EntitiesToSpawnCount = result;
                                 break;
-                            case 'W':
-                                Map[col, row] = new BrickWall(this, col, row);
-                                break;
-                            case '1':
-                                Map[col, row] = new EnemyLvl1(this, col, row);
-                                break;
-                            case '2':
-                                Map[col, row] = new EnemyLvl2(this, col, row);
-                                break;
-                            case '3':
-                                Map[col, row] = new EnemyLvl3(this, col, row);
-                                break;
-                            case 'S':
-                                Map[col, row] = new SteelWall(this, col, row);
-                                break;
-                            case 'B':
-                                Map[col, row] = new Bomb(this, col, row);
-                                break;
-                            case 's':
-                                Map[col, row] = new PrizeSpeed(this, col, row);
-                                break;
-                            case 'h':
-                                Map[col, row] = new PrizeHealth(this, col, row);
-                                break;
-                            case 'f':
-                                Map[col, row] = new PrizeFreeze(this, col, row);
-                                break;
-                            case 'n':
-                                string subString = line.Substring(col + 1, line.Length - col - 1);
-                                if (int.TryParse(subString, out int result))
-                                {
-                                    EntitiesToSpawnCount = result;
-                                    break;
-                                }
+                            }
 
-                                Console.WriteLine("Unable to parse substring to int.");
-                                throw new Exception();
-                        }
+                            Console.WriteLine("Unable to parse substring to int.");
+                            throw new Exception();
                     }
+                }
 
-                    row++;
+                row++;
+            }
+        }
+
+        Entities.AddRange(EntitiesToAdd);
+        EntitiesToAdd.Clear();
+        Status = "Playing";
+        LevelStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void StartRandom()
+    {
+        LevelStarting?.Invoke(this, EventArgs.Empty);
+        Name = "Random Mode";
+        Random random = new Random();
+        FieldSizeY = 10 + random.Next(20);
+        FieldSizeX = 20 + random.Next(60);
+        Map = new BaseEntity[FieldSizeX, FieldSizeY];
+        Entities.Clear();
+        int x = random.Next(FieldSizeX);
+        int y = random.Next(FieldSizeY);
+        Map[x, y] = new Player(this, x, y, 0);
+        for (int i = 0; i < FieldSizeX; i++)
+        {
+            for (int j = 0; j < FieldSizeY; j++)
+            {
+                if (Map[i, j] != null) continue;
+                int probability = random.Next(500);
+                switch (probability)
+                {
+                    case < 10:
+                        Map[i, j] = new BrickWall(this, i, j);
+                        break;
+                    case < 15:
+                        Map[i, j] = new SteelWall(this, i, j);
+                        break;
+                    case < 18:
+                        Map[i, j] = new Bomb(this, i, j);
+                        break;
+                    case < 19:
+                        Map[i, j] = new EnemyLvl1(this, i, j);
+                        break;
+                    case < 20:
+                        Map[i, j] = new EnemyLvl2(this, i, j);
+                        break;
+                    case < 21:
+                        Map[i, j] = new EnemyLvl3(this, i, j);
+                        break;
+                    case < 22:
+                        Map[i, j] = new PrizeSpeed(this, i, j);
+                        break;
+                    case < 23:
+                        Map[i, j] = new PrizeHealth(this, i, j);
+                        break;
+                    case < 24:
+                        Map[i, j] = new PrizeFreeze(this, i, j);
+                        break;
                 }
             }
-
-            Entities.AddRange(EntitiesToAdd);
-            EntitiesToAdd.Clear();
-            Status = "Playing";
-            LevelStarted?.Invoke(this, EventArgs.Empty);
         }
+
+        EntitiesToSpawnCount = random.Next(10);
+        Entities.AddRange(EntitiesToAdd);
+        EntitiesToAdd.Clear();
+        Status = "Playing";
+        LevelStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public void Play(int speedMs)
@@ -124,7 +193,7 @@ public class Field
         {
             ProcessEntities(i);
             i++;
-            FreezeLeftForTicks= int.Max(0, FreezeLeftForTicks-1);
+            FreezeLeftForTicks = int.Max(0, FreezeLeftForTicks - 1);
             Thread.Sleep(speedMs);
         }
     }
@@ -137,7 +206,7 @@ public class Field
             if (tick % entity.SpeedTicks == 0) entity.ProcessTurn();
         }
 
-        if (tick % SpawnTicks == 0)
+        if (tick % SpawnTicks == 0 && EntitiesToSpawnCount != 0)
         {
             List<Tuple<int, int>> freeTiles = [];
             for (int i = 0; i < FieldSizeX; i++)
@@ -152,7 +221,7 @@ public class Field
             {
                 Random random = new Random();
                 int randomNumber = random.Next(freeTiles.Count);
-                EntitiesToSpawnCount--;
+                EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);
                 Map[freeTiles[randomNumber].Item1, freeTiles[randomNumber].Item2] = new Spawn(this,
                     freeTiles[randomNumber].Item1, freeTiles[randomNumber].Item2);
             }
@@ -185,8 +254,8 @@ public class Field
         entity.Moved += HandleEntityMoved;
         entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
-        if(entity is Player player) ConsoleIo.SubscribeToPlayer(player);
-        if(entity is Spawn spawn) ConsoleIo.SubscribeToSpawn(spawn);
+        if (entity is Player player) ConsoleIo.SubscribeToPlayer(player);
+        if (entity is Spawn spawn) ConsoleIo.SubscribeToSpawn(spawn);
     }
 
     private void HandleEntityCreated(object? sender, EventArgs e)

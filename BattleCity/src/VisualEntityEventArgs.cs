@@ -97,7 +97,7 @@ public class VisualEntityEventArgs : EventArgs
                 Color = ConsoleColor.DarkRed;
                 break;
             case SteelWall:
-                Color = ConsoleColor.Gray;
+                Color = ConsoleColor.DarkGray;
                 break;
             case Bomb:
                 Color = ConsoleColor.Black;

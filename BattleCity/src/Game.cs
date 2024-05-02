@@ -154,6 +154,7 @@ You can create levels by yourself, read README.md for this!
             }
         }
     }
+
     private void ViewScoreboard()
     {
         Console.Clear();
@@ -163,16 +164,20 @@ You can create levels by yourself, read README.md for this!
         Console.WriteLine("{0,-15} {1, -20} {2, -10} {3,-20}\n", "Name", "Level", "Score", "Time Elapsed");
         foreach (GameResult gameResult in gameResults)
         {
-            Console.WriteLine("{0,-15} {1, -20} {2, -10} {3,-20:mm\\:ss}", gameResult.Name, gameResult.Level, gameResult.Score,
+            Console.WriteLine("{0,-15} {1, -20} {2, -10} {3,-20:mm\\:ss}", gameResult.Name, gameResult.Level,
+                gameResult.Score,
                 gameResult.TimeElapsed);
         }
+
         Console.WriteLine("\n Press any key to continue...");
-        while(!Console.KeyAvailable) {}
+        while (!Console.KeyAvailable)
+        {
+        }
     }
 
     private List<GameResult> GetListGameResults()
     {
-        string filePath = Path.Combine(ResDirectory, "Scoreboard.json"); 
+        string filePath = Path.Combine(ResDirectory, "Scoreboard.json");
         if (!File.Exists(filePath))
         {
             using (StreamWriter writer = File.CreateText(filePath))
@@ -180,15 +185,15 @@ You can create levels by yourself, read README.md for this!
                 writer.Write("[]");
             }
         }
+
         string jsonString = File.ReadAllText(filePath);
         return JsonConvert.DeserializeObject<List<GameResult>>(jsonString);
     }
 
     private void SetGameResults(List<GameResult> gameResults)
     {
-        string filePath = Path.Combine(ResDirectory, "Scoreboard.json"); 
+        string filePath = Path.Combine(ResDirectory, "Scoreboard.json");
         string newJsonString = JsonConvert.SerializeObject(gameResults, Formatting.Indented);
         File.WriteAllText(filePath, newJsonString);
     }
-    
 }

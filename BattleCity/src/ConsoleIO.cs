@@ -20,7 +20,7 @@ public static class ConsoleIo
         spawn.SpawnTriggered += HandleSpawnTriggered;
         spawn.Created += HandleSpawnsCountUpdate;
     }
-    
+
 
     private static void HandleLevelStarted(object? sender, EventArgs e)
     {
@@ -28,6 +28,7 @@ public static class ConsoleIo
         Console.SetCursorPosition(0, field.FieldSizeY);
         Console.WriteLine(field.Name);
     }
+
     private static void HandleLevelStarting(object? sender, EventArgs e)
     {
         Console.Clear();
@@ -53,51 +54,53 @@ public static class ConsoleIo
             Console.Write(' ');
         }
     }
+
     private static void HandlePlayerStatsUpdated(object? sender, EventArgs e)
     {
         if (sender is not Player player) return;
         Field field = player.Field;
         Console.ResetColor();
-        Console.SetCursorPosition(0, field.FieldSizeY+3);
+        Console.SetCursorPosition(0, field.FieldSizeY + 3);
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, field.FieldSizeY+4);
+        Console.SetCursorPosition(0, field.FieldSizeY + 4);
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, field.FieldSizeY+3);
+        Console.SetCursorPosition(0, field.FieldSizeY + 3);
         Console.Write("Player Health Points ");
         Console.ForegroundColor = ConsoleColor.Red;
-        for(int i = 0; i < player.HealthPointsCurrent; i++) 
+        for (int i = 0; i < player.HealthPointsCurrent; i++)
         {
             Console.Write('\u2665');
         }
+
         Console.ResetColor();
-        Console.SetCursorPosition(0, field.FieldSizeY+4);
+        Console.SetCursorPosition(0, field.FieldSizeY + 4);
         Console.WriteLine($"Score: {player.Score}");
-        
     }
 
     private static void HandleSpawnTriggered(object? sender, EventArgs e)
     {
         if (sender is not Spawn spawn || e is not VisualEntityEventArgs ve) return;
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY+1);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 1);
         Console.ResetColor();
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY+1);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 1);
         Console.WriteLine($"{ve.Entity.GetType().Name} has appeared!");
     }
 
     private static void HandleSpawnsCountUpdate(object? sender, EventArgs e)
     {
         if (sender is not Spawn spawn) return;
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY+2);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 2);
         Console.ResetColor();
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY+2);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 2);
         Console.Write("Spawns Left: ");
         Console.ForegroundColor = ConsoleColor.DarkMagenta;
-        for(int i = 0; i < spawn.Field.EntitiesToSpawnCount; i++) 
+        for (int i = 0; i < spawn.Field.EntitiesToSpawnCount; i++)
         {
             Console.Write('+');
         }
+
         Console.ResetColor();
     }
 }

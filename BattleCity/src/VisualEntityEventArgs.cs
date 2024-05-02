@@ -51,7 +51,7 @@ public class VisualEntityEventArgs : EventArgs
                 Sprite = '\u256c';
                 break;
             case Spawn spawn:
-                switch (spawn.TicksPassed % 4)
+                switch (spawn.TurnsPassed % 4)
                 {
                     case 0:
                         Sprite = '-';

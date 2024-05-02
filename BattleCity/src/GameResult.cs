@@ -1,19 +1,16 @@
 using Newtonsoft.Json;
+
 namespace BattleCity;
 
 public class GameResult : IComparable<GameResult>
 {
-    [JsonProperty("Level")]
-    public string Level { get; set; }
+    [JsonProperty("Level")] public string Level { get; set; }
 
-    [JsonProperty("TimeElapsed")]
-    public TimeSpan TimeElapsed { get; set; }
+    [JsonProperty("TimeElapsed")] public TimeSpan TimeElapsed { get; set; }
 
-    [JsonProperty("Score")]
-    public int Score { get; set; }
-    
-    [JsonProperty("Name")]
-    public string Name { get; set; }
+    [JsonProperty("Score")] public int Score { get; set; }
+
+    [JsonProperty("Name")] public string Name { get; set; }
 
     public int CompareTo(GameResult? other)
     {

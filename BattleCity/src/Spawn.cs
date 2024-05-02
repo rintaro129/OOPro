@@ -7,8 +7,9 @@ public class Spawn(Field field, int x, int y) : BaseEntity(field, x, y)
     public override bool CanProcessTurn() => true;
     public override bool IsSolid() => true;
     public override int SpeedTicks { get; set; } = 4;
-    public int TicksPassed { get; set; } = 0;
-    const int TicksPassedMax = 40;
+    public int TurnsPassed { get; set; } = 0;
+    const int TurnsPassedMax = 40;
+
     public override void Move(int xDifference, int yDifference)
     {
     }
@@ -39,18 +40,19 @@ public class Spawn(Field field, int x, int y) : BaseEntity(field, x, y)
                 Field.Map[X, Y] = new PrizeFreeze(Field, X, Y);
                 break;
         }
+
         SpawnTriggered?.Invoke(this, new VisualEntityEventArgs(Field.Map[X, Y]));
     }
 
     public override void ProcessTurn()
     {
-        if (TicksPassedMax == TicksPassed)
+        if (TurnsPassedMax == TurnsPassed)
         {
             OnDied(EventArgs.Empty);
             return;
         }
 
-        TicksPassed++;
+        TurnsPassed++;
         OnUpdated(EventArgs.Empty);
     }
 }

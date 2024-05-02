@@ -25,15 +25,17 @@ public abstract class BaseEntity
     {
         Moved?.Invoke(this, e);
     }
+
     protected virtual void OnUpdated(EventArgs e)
     {
         Updated?.Invoke(this, e);
     }
+
     protected virtual void OnDied(EventArgs e)
     {
         Died?.Invoke(this, e);
     }
-    
+
 
     public Field Field { get; }
     public int X { get; set; }
@@ -73,6 +75,7 @@ public abstract class BaseEntity
     {
         HealthPointsCurrent += healthToAdd;
     }
+
     protected bool CheckMovePosition(int xDifference, int yDifference) =>
         !CheckPositionOutOfRange(X + xDifference, Y + yDifference) &&
         !CheckPositionIsSolid(X + xDifference, Y + yDifference);
@@ -92,5 +95,7 @@ public abstract class BaseEntity
         return Field.Map[x, y] != null &&
                Field.Map[x, y].IsExplosive();
     }
-    protected bool CheckPositionExploding(int x, int y) => CheckPositionOutOfRange(x, y) || CheckPositionIsExplosive(x, y);
+
+    protected bool CheckPositionExploding(int x, int y) =>
+        CheckPositionOutOfRange(x, y) || CheckPositionIsExplosive(x, y);
 }

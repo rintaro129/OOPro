@@ -17,11 +17,13 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
             OnUpdated(EventArgs.Empty);
             return;
         }
+
         if (!CheckMovePosition(xDifference, yDifference)) return;
         if (Field.Map[X + xDifference, Y + yDifference] is Prize prize)
         {
             prize.GrantPrize(this);
         }
+
         X += xDifference;
         Y += yDifference;
         OnMoved(EventArgs.Empty);
@@ -44,8 +46,10 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
                 {
                     player.ScoreAdd(1);
                 }
+
                 Field.Map[x, y].TakeDamage();
             }
+
             return;
         }
 
@@ -53,16 +57,17 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
         Bullet.Died += HandleBulletDied;
         IsShooting = true;
     }
+
     public override void TakeDamage(int damageTaken = 1)
     {
         WasDamaged = true;
         OnUpdated(EventArgs.Empty);
         base.TakeDamage(damageTaken);
     }
+
     private void HandleBulletDied(object? sender, EventArgs e)
     {
         IsShooting = false;
         Bullet = null;
     }
-    
 }

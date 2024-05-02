@@ -29,9 +29,10 @@ public class Bullet : BaseEntity
                 {
                     player.ScoreAdd(1);
                 }
+
                 Field.Map[x, y].TakeDamage();
-                
             }
+
             return;
         }
 
@@ -45,5 +46,4 @@ public class Bullet : BaseEntity
         if (HealthPointsCurrent <= 0) return;
         Move(Direction);
     }
-    
 }

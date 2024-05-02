@@ -17,7 +17,7 @@ Build the project and execute the binary as shown below.
 git clone https://github.com/rintaro129/OOPro.git
 cd BattleCity
 dotnet build BattleCity.csproj
-./bin/Debug/net8.0
+./bin/Debug/net8.0/BattleCity
 ```
 
 ### Importatnt! Do not move the binary file, the same goes for res directory!

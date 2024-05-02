@@ -133,8 +133,8 @@ public class Field
         LevelStarting?.Invoke(this, EventArgs.Empty);
         Name = "Random Mode";
         Random random = new Random();
-        FieldSizeY = 10 + random.Next(20);
-        FieldSizeX = 20 + random.Next(60);
+        FieldSizeY = 10 + random.Next(15);
+        FieldSizeX = 20 + random.Next(50);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
         Entities.Clear();
         int x = random.Next(FieldSizeX);
@@ -179,7 +179,7 @@ public class Field
             }
         }
 
-        EntitiesToSpawnCount = random.Next(10);
+        EntitiesToSpawnCount = random.Next(6);
         Entities.AddRange(EntitiesToAdd);
         EntitiesToAdd.Clear();
         Status = "Playing";

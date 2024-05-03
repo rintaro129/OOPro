@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Text;
 
 namespace BattleCity;
 
@@ -28,6 +29,7 @@ class Game
     public void Start()
     {
         Console.CursorVisible = false;
+        Console.OutputEncoding = Encoding.Unicode;
         Console.Clear();
         Console.WriteLine("What's your name?");
         Name = Console.ReadLine();

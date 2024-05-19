@@ -96,7 +96,7 @@ public static class ConsoleIo
         Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 2);
         Console.Write("Spawns Left: ");
         Console.ForegroundColor = ConsoleColor.DarkMagenta;
-        for (int i = 0; i < spawn.Field.EntitiesToSpawnCount; i++)
+        for (int i = 0; i < spawn.Field.EntitiesToSpawnCount - 1; i++) // EntitiesToSpawnCount will decrease only after spawn triggering
         {
             Console.Write('+');
         }

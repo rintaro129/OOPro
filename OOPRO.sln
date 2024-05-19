@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Practice2", "Practice2.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practice3", "..\Practice3\Practice3.csproj", "{7AFA2482-BC1E-4B37-B4DC-CC37BF05DF87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleCity", "BattleCity\BattleCity.csproj", "{EFE5497D-97FE-488A-93F8-A0119C0E51E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattleCity", "BattleCity\BattleCity.csproj", "{EFE5497D-97FE-488A-93F8-A0119C0E51E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7F46649A-381A-4796-953D-1B9F5EBDCC04}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -72,10 +72,10 @@ public class VisualEntityEventArgs : EventArgs
                 Sprite = '+';
                 break;
             case PrizeSpeed:
-                Sprite = '\u2b4d';
+                Sprite = '~';
                 break;
             case PrizeFreeze:
-                Sprite = '\u2746';
+                Sprite = '*';
                 break;
         }
     }
@@ -112,7 +112,7 @@ public class VisualEntityEventArgs : EventArgs
                 Color = ConsoleColor.Red;
                 break;
             case PrizeSpeed:
-                Color = ConsoleColor.Yellow;
+                Color = ConsoleColor.DarkYellow;
                 break;
             case PrizeFreeze:
                 Color = ConsoleColor.Blue;

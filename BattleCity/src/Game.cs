@@ -4,27 +4,12 @@ using System.Text;
 
 namespace BattleCity;
 
-class Game
+public class Game
 {
-    private const int TickSeconds = 25;
-    private string ResDirectory { get; }
-    private string Name { get; set; }
+    private const int tickSeconds = 25;
+    private string name { get; set; }
+    public const string ResDirectory = "res";
 
-    public Game()
-    {
-        string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        DirectoryInfo currentDirectoryInfo = new DirectoryInfo(currentDirectory);
-        currentDirectoryInfo = currentDirectoryInfo.Parent.Parent.Parent;
-        currentDirectoryInfo = new DirectoryInfo(Path.Combine(currentDirectoryInfo.FullName, "res"));
-        if (currentDirectory == null)
-        {
-            Console.WriteLine("Could not find the resource directory");
-            Thread.Sleep(1000);
-            return;
-        }
-
-        ResDirectory = currentDirectoryInfo.FullName;
-    }
 
     public void Start()
     {
@@ -32,11 +17,11 @@ class Game
         Console.OutputEncoding = Encoding.Unicode;
         Console.Clear();
         Console.WriteLine("What's your name?");
-        Name = Console.ReadLine();
+        name = Console.ReadLine();
         while (true)
         {
             Console.Clear();
-            Console.WriteLine(@$"Welcome in Battle City, {Name}
+            Console.WriteLine(@$"Welcome in Battle City, {name}
 Destroy all the enemy tanks!
 Collect prizes!
 Avoid bullets!
@@ -83,14 +68,14 @@ You can create levels by yourself, read README.md for this!
     {
         string[] levelPaths = GetLevelPaths();
         Field field = new Field();
-        GameResult gameResult = new GameResult() { Name = Name, Level = "0", Score = 0 };
+        GameResult gameResult = new GameResult() { Name = name, Level = "0", Score = 0 };
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
         bool reachedEnd = true;
         foreach (string filepath in levelPaths)
         {
             field.Start(filepath, gameResult.Score);
-            field.Play(TickSeconds);
+            field.Play(tickSeconds);
             gameResult.Score += field.Player.Score;
             Console.SetCursorPosition(0, field.FieldSizeY + 5);
             Console.WriteLine(field.Status);
@@ -144,7 +129,7 @@ You can create levels by yourself, read README.md for this!
     {
         Field field = new Field();
         field.StartRandom();
-        field.Play(TickSeconds);
+        field.Play(tickSeconds);
         Console.SetCursorPosition(0, field.FieldSizeY + 5);
         Console.WriteLine(field.Status);
         Console.WriteLine("Press Enter to continue...");

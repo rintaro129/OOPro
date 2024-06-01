@@ -37,23 +37,25 @@ public static class ConsoleIO
 
     private static void HandleEntityCreated(object? sender, EventArgs e)
     {
-        if (e is VisualEntityEventArgs args)
+        if (e is not VisualEntityEventArgs args)
         {
-            Console.ForegroundColor = args.Color;
-            Console.BackgroundColor = args.BackgroundColor;
-            Console.SetCursorPosition(args.X, args.Y);
-            Console.Write(args.Sprite);
-            Console.ResetColor();
+            return;
         }
+        Console.ForegroundColor = args.Color;
+        Console.BackgroundColor = args.BackgroundColor;
+        Console.SetCursorPosition(args.X, args.Y);
+        Console.Write(args.Sprite);
+        Console.ResetColor();
     }
 
     private static void HandleEntityDeleted(object? sender, EventArgs e)
     {
-        if (e is VisualEntityEventArgs args)
+        if (e is not VisualEntityEventArgs args)
         {
-            Console.SetCursorPosition(args.X, args.Y);
-            Console.Write(' ');
+            return;
         }
+        Console.SetCursorPosition(args.X, args.Y);
+        Console.Write(' ');
     }
 
     private static void HandlePlayerStatsUpdated(object? sender, EventArgs e)

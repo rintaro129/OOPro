@@ -271,11 +271,12 @@ public class Field
         bool enemiesAreDefeated = true;
         foreach (BaseEntity entity in MovableEntities)
         {
-            if (entity is Tank && entity is not BattleCity.Player)
+            if (entity is not Tank || entity is BattleCity.Player)
             {
-                enemiesAreDefeated = false;
-                break;
+                continue;
             }
+            enemiesAreDefeated = false;
+            break;
         }
 
         if (enemiesAreDefeated && EntitiesToSpawnCount == 0)
@@ -308,56 +309,48 @@ public class Field
 
     private void HandleEntityCreated(object? sender, EventArgs e)
     {
-        if (sender is BaseEntity entity)
-        {
-            Map[entity.X, entity.Y] = entity;
-            if (entity.CanProcessTurn()) 
-                entitiesToAdd.Add(entity);
-            EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
-        }
-        else throw new ArgumentException();
+        if (sender is not BaseEntity entity)
+            throw new ArgumentException();
+        Map[entity.X, entity.Y] = entity;
+        if (entity.CanProcessTurn())
+            entitiesToAdd.Add(entity);
+        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
     }
 
     private void HandleEntityDied(object? sender, EventArgs e)
     {
-        if (sender is BaseEntity entity)
-        {
-            Map[entity.X, entity.Y] = null;
-            if (entity.CanProcessTurn()) 
-                entitiesToDelete.Add(entity);
-            if (entity is Player) 
-                Status = "Player Died :(";
-            EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
-            if (entity is Tank or Obstacle) 
-                Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
-            if (entity is Spawn) 
-                EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);
-        }
-        else throw new ArgumentException();
+        if (sender is not BaseEntity entity)
+            throw new ArgumentException();
+        Map[entity.X, entity.Y] = null;
+        if (entity.CanProcessTurn())
+            entitiesToDelete.Add(entity);
+        if (entity is Player)
+            Status = "Player Died :(";
+        EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
+        if (entity is Tank or Obstacle)
+            Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
+        if (entity is Spawn)
+            EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);
     }
 
     private void HandleEntityMoved(object? sender, EventArgs e)
     {
-        if (sender is BaseEntity entity)
-        {
-            Map[entity.X, entity.Y] = entity;
-            EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
-            int xInvertDifference, yInvertDifference;
-            (xInvertDifference, yInvertDifference) = DirectionUtils.ToInts(DirectionUtils.Invert(entity.Direction));
-            int x = entity.X + xInvertDifference;
-            int y = entity.Y + yInvertDifference;
-            Map[x, y] = null;
-            EntityDeleted?.Invoke(this, new VisualEntityEventArgs(x, y));
-        }
-        else throw new ArgumentException();
+        if (sender is not BaseEntity entity)
+            throw new ArgumentException();
+        Map[entity.X, entity.Y] = entity;
+        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+        int xInvertDifference, yInvertDifference;
+        (xInvertDifference, yInvertDifference) = DirectionUtils.ToInts(DirectionUtils.Invert(entity.Direction));
+        int x = entity.X + xInvertDifference;
+        int y = entity.Y + yInvertDifference;
+        Map[x, y] = null;
+        EntityDeleted?.Invoke(this, new VisualEntityEventArgs(x, y));
     }
 
     private void HandleEntityUpdated(object? sender, EventArgs e)
     {
-        if (sender is BaseEntity entity)
-        {
-            EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
-        }
-        else throw new ArgumentException();
+        if (sender is not BaseEntity entity)
+            throw new ArgumentException();
+        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
     }
 }

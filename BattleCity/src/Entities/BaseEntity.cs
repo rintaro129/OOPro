@@ -61,13 +61,14 @@ public abstract class BaseEntity
 
     public virtual void TakeDamage(int damageTaken = 1)
     {
-        if (!IsUnkillable())
+        if (IsUnkillable())
         {
-            HealthAdd(-damageTaken);
-            if (HealthPointsCurrent == 0)
-            {
-                OnDied(EventArgs.Empty);
-            }
+            return;
+        }
+        HealthAdd(-damageTaken);
+        if (HealthPointsCurrent == 0)
+        {
+            OnDied(EventArgs.Empty);
         }
     }
 

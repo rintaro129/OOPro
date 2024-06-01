@@ -7,7 +7,7 @@ public class Field
 {
     public Field()
     {
-        ConsoleIo.ConnectVisuals(this);
+        ConsoleIO.ConnectVisuals(this);
     }
 
     public event EventHandler? EntityCreated;
@@ -268,8 +268,8 @@ public class Field
         entity.Moved += HandleEntityMoved;
         entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
-        if (entity is Player player) ConsoleIo.SubscribeToPlayer(player);
-        if (entity is Spawn spawn) ConsoleIo.SubscribeToSpawn(spawn);
+        if (entity is Player player) ConsoleIO.SubscribeToPlayer(player);
+        if (entity is Spawn spawn) ConsoleIO.SubscribeToSpawn(spawn);
     }
 
     private void HandleEntityCreated(object? sender, EventArgs e)

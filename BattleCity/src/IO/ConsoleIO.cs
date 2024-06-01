@@ -1,6 +1,6 @@
 namespace BattleCity;
 
-public static class ConsoleIo
+public static class ConsoleIO
 {
     public static void ConnectVisuals(Field field)
     {

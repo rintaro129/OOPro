@@ -2,6 +2,10 @@ namespace BattleCity;
 
 public static class ConsoleIO
 {
+    private const int SPAWN_INFO_LINE = 1;
+    private const int SPAWNS_LEFT_INFO_LINE = 2;
+    private const int HEALTH_INFO_LINE = 3;
+    private const int SCORE_INFO_LINE = 4;
     public static void ConnectVisuals(Field field)
     {
         field.EntityCreated += HandleEntityCreated;
@@ -64,11 +68,11 @@ public static class ConsoleIO
             return;
         Field field = player.Field;
         Console.ResetColor();
-        Console.SetCursorPosition(0, field.FieldSizeY + 3);
+        Console.SetCursorPosition(0, field.FieldSizeY + HEALTH_INFO_LINE);
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, field.FieldSizeY + 4);
+        Console.SetCursorPosition(0, field.FieldSizeY + SCORE_INFO_LINE);
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, field.FieldSizeY + 3);
+        Console.SetCursorPosition(0, field.FieldSizeY + HEALTH_INFO_LINE);
         Console.Write("Player Health Points ");
         Console.ForegroundColor = ConsoleColor.Red;
         for (int i = 0; i < player.HealthPointsCurrent; i++)
@@ -77,7 +81,7 @@ public static class ConsoleIO
         }
 
         Console.ResetColor();
-        Console.SetCursorPosition(0, field.FieldSizeY + 4);
+        Console.SetCursorPosition(0, field.FieldSizeY + SCORE_INFO_LINE);
         Console.WriteLine($"Score: {player.Score}");
     }
 
@@ -85,10 +89,10 @@ public static class ConsoleIO
     {
         if (sender is not Spawn spawn || e is not VisualEntityEventArgs ve) 
             return;
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 1);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + SPAWN_INFO_LINE);
         Console.ResetColor();
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 1);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + SPAWN_INFO_LINE);
         Console.WriteLine($"{ve.Entity.GetType().Name} has appeared!");
     }
 
@@ -96,10 +100,10 @@ public static class ConsoleIO
     {
         if (sender is not Spawn spawn) 
             return;
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 2);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + SPAWNS_LEFT_INFO_LINE);
         Console.ResetColor();
         Console.WriteLine("                                                       ");
-        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 2);
+        Console.SetCursorPosition(0, spawn.Field.FieldSizeY + SPAWNS_LEFT_INFO_LINE);
         Console.Write("Spawns Left: ");
         Console.ForegroundColor = ConsoleColor.DarkMagenta;
         for (int i = 0; i < spawn.Field.EntitiesToSpawnCount - 1; i++) // EntitiesToSpawnCount will decrease only after spawn triggering

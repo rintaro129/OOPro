@@ -19,7 +19,7 @@ public class Field
     public int FieldSizeY { get; set; }
     public BaseEntity?[,] Map { get; set; }
     public Player Player { get; set; }
-    public List<BaseEntity> Entities { get; } = [];
+    public List<BaseEntity> MovableEntities { get; } = [];
     public string Status { get; set; }
     public int EntitiesToSpawnCount { get; set; }
     public int FreezeLeftForTicks { get; set; }
@@ -118,7 +118,7 @@ public class Field
             }
         }
 
-        Entities.AddRange(entitiesToAdd);
+        MovableEntities.AddRange(entitiesToAdd);
         entitiesToAdd.Clear();
     }
 
@@ -135,7 +135,7 @@ public class Field
 
         (FieldSizeX, FieldSizeY) = getLevelSize(filePath);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
-        Entities.Clear();
+        MovableEntities.Clear();
         populateMap(filePath, score);
        
         Status = "Playing";
@@ -150,7 +150,7 @@ public class Field
         FieldSizeY = minHeight + random.Next(maxHeight-minHeight);
         FieldSizeX = minWidth + random.Next(maxWidth-minWidth);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
-        Entities.Clear();
+        MovableEntities.Clear();
         int x = random.Next(FieldSizeX);
         int y = random.Next(FieldSizeY);
         Map[x, y] = new Player(this, x, y, 0);
@@ -194,7 +194,7 @@ public class Field
         }
 
         EntitiesToSpawnCount = random.Next(6);
-        Entities.AddRange(entitiesToAdd);
+        MovableEntities.AddRange(entitiesToAdd);
         entitiesToAdd.Clear();
         Status = "Playing";
         LevelStarted?.Invoke(this, EventArgs.Empty);
@@ -214,7 +214,7 @@ public class Field
 
     public void ProcessEntities(int tick)
     {
-        foreach (BaseEntity entity in Entities)
+        foreach (BaseEntity entity in MovableEntities)
         {
             if (FreezeLeftForTicks > 0 && entity is Tank tank && tank != FreezeExceptionTank) continue;
             if (tick % entity.SpeedTicks == 0) entity.ProcessTurn();
@@ -242,14 +242,14 @@ public class Field
 
         foreach (BaseEntity entity in entitiesToDelete)
         {
-            Entities.Remove(entity);
+            MovableEntities.Remove(entity);
         }
 
-        Entities.AddRange(entitiesToAdd);
+        MovableEntities.AddRange(entitiesToAdd);
         entitiesToAdd.Clear();
         entitiesToDelete.Clear();
         bool enemiesAreDefeated = true;
-        foreach (BaseEntity entity in Entities)
+        foreach (BaseEntity entity in MovableEntities)
         {
             if (entity is Tank && entity is not BattleCity.Player)
             {

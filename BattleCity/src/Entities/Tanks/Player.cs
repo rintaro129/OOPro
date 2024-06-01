@@ -26,7 +26,8 @@ public class Player : Tank
 
     public override void ProcessTurn()
     {
-        if (HealthPointsCurrent <= 0) return;
+        if (HealthPointsCurrent <= 0) 
+            return;
         WasDamaged = false;
         OnUpdated(EventArgs.Empty);
         if (Console.KeyAvailable)

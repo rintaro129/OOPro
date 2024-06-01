@@ -24,7 +24,8 @@ public static class ConsoleIO
 
     private static void HandleLevelStarted(object? sender, EventArgs e)
     {
-        if (sender is not Field field) return;
+        if (sender is not Field field) 
+            return;
         Console.SetCursorPosition(0, field.FieldSizeY);
         Console.WriteLine(field.Name);
     }
@@ -57,7 +58,8 @@ public static class ConsoleIO
 
     private static void HandlePlayerStatsUpdated(object? sender, EventArgs e)
     {
-        if (sender is not Player player) return;
+        if (sender is not Player player) 
+            return;
         Field field = player.Field;
         Console.ResetColor();
         Console.SetCursorPosition(0, field.FieldSizeY + 3);
@@ -79,7 +81,8 @@ public static class ConsoleIO
 
     private static void HandleSpawnTriggered(object? sender, EventArgs e)
     {
-        if (sender is not Spawn spawn || e is not VisualEntityEventArgs ve) return;
+        if (sender is not Spawn spawn || e is not VisualEntityEventArgs ve) 
+            return;
         Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 1);
         Console.ResetColor();
         Console.WriteLine("                                                       ");
@@ -89,7 +92,8 @@ public static class ConsoleIO
 
     private static void HandleSpawnsCountUpdate(object? sender, EventArgs e)
     {
-        if (sender is not Spawn spawn) return;
+        if (sender is not Spawn spawn) 
+            return;
         Console.SetCursorPosition(0, spawn.Field.FieldSizeY + 2);
         Console.ResetColor();
         Console.WriteLine("                                                       ");

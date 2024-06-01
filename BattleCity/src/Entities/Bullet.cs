@@ -43,7 +43,8 @@ public class Bullet : BaseEntity
 
     public override void ProcessTurn()
     {
-        if (HealthPointsCurrent <= 0) return;
+        if (HealthPointsCurrent <= 0) 
+            return;
         Move(Direction);
     }
 }

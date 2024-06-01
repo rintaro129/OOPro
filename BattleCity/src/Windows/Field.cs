@@ -158,7 +158,8 @@ public class Field
         {
             for (int j = 0; j < FieldSizeY; j++)
             {
-                if (Map[i, j] != null) continue;
+                if (Map[i, j] != null) 
+                    continue;
                 int probability = random.Next(500);
                 switch (probability)
                 {
@@ -215,8 +216,10 @@ public class Field
     {
         foreach (BaseEntity entity in MovableEntities)
         {
-            if (FreezeLeftForTicks > 0 && entity is Tank tank && tank != FreezeExceptionTank) continue;
-            if (tick % entity.SpeedTicks == 0) entity.ProcessTurn();
+            if (FreezeLeftForTicks > 0 && entity is Tank tank && tank != FreezeExceptionTank) 
+                continue;
+            if (tick % entity.SpeedTicks == 0) 
+                entity.ProcessTurn();
         }
     }
     private void CheckForSpawn(int tick)
@@ -238,7 +241,8 @@ public class Field
         {
             for (int j = 0; j < FieldSizeY; j++)
             {
-                if (Map[i, j] == null) freeTiles.Add(new Tuple<int, int>(i, j));
+                if (Map[i, j] == null) 
+                    freeTiles.Add(new Tuple<int, int>(i, j));
             }
         }
 
@@ -276,7 +280,6 @@ public class Field
 
         if (enemiesAreDefeated && EntitiesToSpawnCount == 0)
             Status = "Enemies are defeated!";
-
     }
     public void ProcessEntities(int tick)
     {
@@ -297,8 +300,10 @@ public class Field
         entity.Moved += HandleEntityMoved;
         entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
-        if (entity is Player player) ConsoleIO.SubscribeToPlayer(player);
-        if (entity is Spawn spawn) ConsoleIO.SubscribeToSpawn(spawn);
+        if (entity is Player player) 
+            ConsoleIO.SubscribeToPlayer(player);
+        if (entity is Spawn spawn) 
+            ConsoleIO.SubscribeToSpawn(spawn);
     }
 
     private void HandleEntityCreated(object? sender, EventArgs e)
@@ -306,7 +311,8 @@ public class Field
         if (sender is BaseEntity entity)
         {
             Map[entity.X, entity.Y] = entity;
-            if (entity.CanProcessTurn()) entitiesToAdd.Add(entity);
+            if (entity.CanProcessTurn()) 
+                entitiesToAdd.Add(entity);
             EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
         }
         else throw new ArgumentException();
@@ -317,11 +323,15 @@ public class Field
         if (sender is BaseEntity entity)
         {
             Map[entity.X, entity.Y] = null;
-            if (entity.CanProcessTurn()) entitiesToDelete.Add(entity);
-            if (entity is Player) Status = "Player Died :(";
+            if (entity.CanProcessTurn()) 
+                entitiesToDelete.Add(entity);
+            if (entity is Player) 
+                Status = "Player Died :(";
             EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
-            if (entity is Tank or Obstacle) Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
-            if (entity is Spawn) EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);
+            if (entity is Tank or Obstacle) 
+                Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
+            if (entity is Spawn) 
+                EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);
         }
         else throw new ArgumentException();
     }

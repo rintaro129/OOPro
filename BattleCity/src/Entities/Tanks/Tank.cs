@@ -10,7 +10,8 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
 
     public override void Move(int xDifference, int yDifference)
     {
-        if (xDifference == 0 && yDifference == 0) return;
+        if (xDifference == 0 && yDifference == 0) 
+            return;
         if (DirectionUtils.ToDirection(xDifference, yDifference) != Direction)
         {
             Direction = DirectionUtils.ToDirection(xDifference, yDifference);
@@ -18,7 +19,8 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
             return;
         }
 
-        if (!CheckMovePosition(xDifference, yDifference)) return;
+        if (!CheckMovePosition(xDifference, yDifference)) 
+            return;
         if (Field.Map[X + xDifference, Y + yDifference] is Prize prize)
         {
             prize.GrantPrize(this);
@@ -34,7 +36,8 @@ public abstract class Tank(Field field, int x, int y) : BaseEntity(field, x, y)
 
     public void Shoot()
     {
-        if (IsShooting) return;
+        if (IsShooting) 
+            return;
         int xDifference, yDifference;
         (xDifference, yDifference) = DirectionUtils.ToInts(Direction);
         int x = X + xDifference, y = Y + yDifference;

@@ -47,7 +47,8 @@ You can create levels by yourself, read README.md for this!
                     break;
             }
 
-            if (option == "quit") break;
+            if (option == "quit") 
+                break;
         }
     }
 
@@ -104,7 +105,8 @@ You can create levels by yourself, read README.md for this!
                 }
             }
 
-            if (!reachedEnd) break;
+            if (!reachedEnd) 
+                break;
         }
 
         if (reachedEnd)
@@ -119,7 +121,8 @@ You can create levels by yourself, read README.md for this!
             {
                 if (Console.KeyAvailable)
                 {
-                    if (Console.ReadKey(true).Key == ConsoleKey.Enter) break;
+                    if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                        break;
                 }
             }
         }
@@ -137,7 +140,8 @@ You can create levels by yourself, read README.md for this!
         {
             if (Console.KeyAvailable)
             {
-                if (Console.ReadKey(true).Key == ConsoleKey.Enter) break;
+                if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                    break;
             }
         }
     }

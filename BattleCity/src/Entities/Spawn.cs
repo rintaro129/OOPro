@@ -11,10 +11,6 @@ public class Spawn(Field field, int x, int y) : BaseEntity(field, x, y)
     public int TurnsPassed { get; set; } = 0;
     const int TurnsPassedMax = 40;
 
-    public override void Move(int xDifference, int yDifference)
-    {
-    }
-
     protected override void OnDied(EventArgs e)
     {
         base.OnDied(e);

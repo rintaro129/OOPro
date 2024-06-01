@@ -45,7 +45,7 @@ public abstract class BaseEntity
     public virtual int HealthPointsCurrent { get; set; } = 1;
     public virtual int SpeedTicks { get; set; } = 0;
     public abstract bool CanProcessTurn();
-    public abstract void Move(int xDifference, int yDifference);
+    public virtual void Move(int xDifference, int yDifference) { }
 
     public void Move(Direction direction)
     {
@@ -54,7 +54,7 @@ public abstract class BaseEntity
         Move(xDifference, yDifference);
     }
 
-    public abstract void ProcessTurn();
+    public virtual void ProcessTurn() { }
     public abstract bool IsSolid();
     public abstract bool IsUnkillable();
 

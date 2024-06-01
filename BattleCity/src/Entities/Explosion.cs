@@ -10,11 +10,6 @@ public class Explosion(Field field, int x, int y) : BaseEntity(field, x, y)
     public override int SpeedTicks { get; set; } = 4;
     private int TurnsPassed { get; set; }
     const int TurnsPassedMax = 5;
-    public override void Move(int xDifference, int yDifference)
-    {
-        
-    }
-
     public override void ProcessTurn()
     {
         if(TurnsPassedMax == TurnsPassed)

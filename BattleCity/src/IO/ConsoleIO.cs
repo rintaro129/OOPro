@@ -1,3 +1,5 @@
+using System;
+
 namespace BattleCity;
 
 public static class ConsoleIO
@@ -22,7 +24,7 @@ public static class ConsoleIO
     public static void SubscribeToSpawn(Spawn spawn)
     {
         spawn.SpawnTriggered += HandleSpawnTriggered;
-        spawn.Created += HandleSpawnsCountUpdate;
+        spawn.SpawnTriggered += HandleSpawnsCountUpdate;
     }
 
 
@@ -32,6 +34,14 @@ public static class ConsoleIO
             return;
         Console.SetCursorPosition(0, field.FieldSizeY);
         Console.WriteLine(field.Name);
+        Console.SetCursorPosition(0, field.FieldSizeY + SPAWNS_LEFT_INFO_LINE);
+        Console.Write("Spawns Left: ");
+        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+        for (int i = 0; i < field.EntitiesToSpawnCount; i++)
+        {
+            Console.Write('+');
+        }
+        Console.ResetColor();
     }
 
     private static void HandleLevelStarting(object? sender, EventArgs e)
@@ -106,7 +116,7 @@ public static class ConsoleIO
         Console.SetCursorPosition(0, spawn.Field.FieldSizeY + SPAWNS_LEFT_INFO_LINE);
         Console.Write("Spawns Left: ");
         Console.ForegroundColor = ConsoleColor.DarkMagenta;
-        for (int i = 0; i < spawn.Field.EntitiesToSpawnCount - 1; i++) // EntitiesToSpawnCount will decrease only after spawn triggering
+        for (int i = 0; i < spawn.Field.EntitiesToSpawnCount; i++) 
         {
             Console.Write('+');
         }

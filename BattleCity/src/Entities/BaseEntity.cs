@@ -91,12 +91,6 @@ public abstract class BaseEntity
                Field.Map[x, y].IsSolid();
     }
 
-    private bool CheckPositionIsExplosive(int x, int y)
-    {
-        return Field.Map[x, y] != null &&
-               Field.Map[x, y].IsExplosive();
-    }
-
     protected bool CheckPositionExploding(int x, int y) =>
-        CheckPositionOutOfRange(x, y) || CheckPositionIsExplosive(x, y);
+        CheckPositionOutOfRange(x, y) || Field.Map[x, y] != null;
 }

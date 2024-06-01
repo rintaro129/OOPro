@@ -64,7 +64,13 @@ You can create levels by yourself, read README.md for this!
         gameResults.Add(gameResult);
         SetGameResults(gameResults);
     }
-
+    public void PressEnter()
+    {
+        Console.WriteLine("Press Enter to continue...");
+        while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
+        { 
+        }
+    }
     private void StartCampaign()
     {
         string[] levelPaths = GetLevelPaths();
@@ -72,7 +78,6 @@ You can create levels by yourself, read README.md for this!
         GameResult gameResult = new GameResult() { Name = name, Level = "0", Score = 0 };
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
-        bool reachedEnd = true;
         foreach (string filepath in levelPaths)
         {
             field.Start(filepath, gameResult.Score);
@@ -84,39 +89,25 @@ You can create levels by yourself, read README.md for this!
             {
                 case "Escaped":
                 case "Player Died :(":
-                    reachedEnd = false;
                     stopwatch.Stop();
                     gameResult.TimeElapsed = stopwatch.Elapsed;
                     AddGameResult(gameResult);
                     Console.WriteLine("Your score has been saved.");
-                    break;
+                    PressEnter();
+                    return;
                 case "Enemies are defeated!":
                     gameResult.Level = Path.GetFileNameWithoutExtension(filepath);
                     Console.WriteLine("Onto the next level...");
+                    PressEnter();
                     break;
             }
-
-            Console.WriteLine("Press Enter to continue...");
-            while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
-            {
-            }
-
-            if (!reachedEnd) 
-                break;
         }
-
-        if (reachedEnd)
-        {
-            Console.WriteLine("Congratulations! You have beaten all the levels!");
-            stopwatch.Stop();
-            gameResult.TimeElapsed = stopwatch.Elapsed;
-            AddGameResult(gameResult);
-            Console.WriteLine("Your score has been saved.");
-            Console.WriteLine("Press Enter to continue...");
-            while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
-            {
-            }
-        }
+        Console.WriteLine("Congratulations! You have beaten all the levels!");
+        stopwatch.Stop();
+        gameResult.TimeElapsed = stopwatch.Elapsed;
+        AddGameResult(gameResult);
+        Console.WriteLine("Your score has been saved.");
+        PressEnter();
     }
 
     private void StartRandomMode()
@@ -126,10 +117,7 @@ You can create levels by yourself, read README.md for this!
         field.Play(tickSeconds);
         Console.SetCursorPosition(0, field.FieldSizeY + 5);
         Console.WriteLine(field.Status);
-        Console.WriteLine("Press Enter to continue...");
-        while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
-        {
-        }
+        PressEnter();
     }
 
     private void ViewScoreboard()

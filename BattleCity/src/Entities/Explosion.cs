@@ -2,6 +2,7 @@ namespace BattleCity;
 
 public class Explosion(Field field, int x, int y) : BaseEntity(field, x, y)
 {
+    public override string GetName() => "Explosion";
     public override bool IsUnkillable() => true;
     public override bool CanProcessTurn() => true;
     public override bool IsSolid() => true;

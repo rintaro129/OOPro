@@ -93,7 +93,7 @@ public static class ConsoleIO
         Console.ResetColor();
         Console.WriteLine("                                                       ");
         Console.SetCursorPosition(0, spawn.Field.FieldSizeY + SPAWN_INFO_LINE);
-        Console.WriteLine($"{ve.Entity.GetType().Name} has appeared!");
+        Console.WriteLine($"{ve.Entity.GetName()} has appeared!");
     }
 
     private static void HandleSpawnsCountUpdate(object? sender, EventArgs e)

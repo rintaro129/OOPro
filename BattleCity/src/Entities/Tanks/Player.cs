@@ -2,6 +2,7 @@ namespace BattleCity;
 
 public class Player : Tank 
 {
+    public override string GetName() => "Player Tank";
     public Player(Field field, int x, int y, int score) : base(field, x, y)
     {
         Score = score;

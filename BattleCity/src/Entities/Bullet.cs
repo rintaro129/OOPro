@@ -3,7 +3,7 @@ namespace BattleCity;
 public class Bullet : BaseEntity
 {
     public Tank Tank { get; set; }
-
+    public override string GetName() => "Bullet";
     public override bool CanProcessTurn() => true;
     public override bool IsSolid() => true;
 

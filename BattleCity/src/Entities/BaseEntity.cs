@@ -36,7 +36,7 @@ public abstract class BaseEntity
         Died?.Invoke(this, e);
     }
 
-
+    public abstract string GetName();
     public Field Field { get; }
     public int X { get; set; }
     public int Y { get; set; }

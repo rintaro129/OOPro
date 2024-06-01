@@ -2,6 +2,7 @@ namespace BattleCity;
 
 public class Bomb(Field field, int x, int y) : Obstacle(field, x, y)
 {
+    public override string GetName() => "Bomb";
     protected override void OnDied(EventArgs e)
     {
         base.OnDied(e);

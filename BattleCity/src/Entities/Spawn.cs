@@ -2,6 +2,7 @@ namespace BattleCity;
 
 public class Spawn(Field field, int x, int y) : BaseEntity(field, x, y)
 {
+    public override string GetName() => "Spawn";
     public event EventHandler? SpawnTriggered;
     public override bool IsUnkillable() => true;
     public override bool CanProcessTurn() => true;

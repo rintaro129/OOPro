@@ -148,18 +148,15 @@ You can create levels by yourself, read README.md for this!
         Console.WriteLine("Scoreboard");
         List<GameResult> gameResults = GetListGameResults();
         gameResults.Sort();
-        Console.WriteLine("{0,-15} {1, -20} {2, -10} {3,-20}\n", "Name", "Level", "Score", "Time Elapsed");
+        Console.WriteLine("{0, -15} {1, -20} {2, -10} {3, -20}\n", "Name", "Level", "Score", "Time Elapsed");
         foreach (GameResult gameResult in gameResults)
         {
-            Console.WriteLine("{0,-15} {1, -20} {2, -10} {3,-20:mm\\:ss}", gameResult.Name, gameResult.Level,
-                gameResult.Score,
-                gameResult.TimeElapsed);
+            Console.WriteLine("{0, -15} {1, -20} {2, -10} {3, -20:mm\\:ss}", 
+                gameResult.Name, gameResult.Level, gameResult.Score, gameResult.TimeElapsed);
         }
 
         Console.WriteLine("\n Press any key to continue...");
-        while (!Console.KeyAvailable)
-        {
-        }
+        Console.ReadKey();
     }
 
     private List<GameResult> GetListGameResults()

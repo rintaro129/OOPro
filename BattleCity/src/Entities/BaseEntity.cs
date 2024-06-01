@@ -64,7 +64,7 @@ public abstract class BaseEntity
         if (!IsUnkillable())
         {
             HealthAdd(-damageTaken);
-            if (HealthPointsCurrent <= 0)
+            if (HealthPointsCurrent == 0)
             {
                 OnDied(EventArgs.Empty);
             }

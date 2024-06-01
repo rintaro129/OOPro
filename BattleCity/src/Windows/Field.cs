@@ -71,10 +71,6 @@ public class Field
                     {
                         // Check if the character is P, W, or 1
                         case 'P':
-                            if(Player != null)
-                            {
-                                throw new Exception("Only one player on a map");
-                            }
                             Player = new Player(this, col, row, score);
                             Map[col, row] = Player;
                             break;
@@ -224,7 +220,7 @@ public class Field
             if (tick % entity.SpeedTicks == 0) entity.ProcessTurn();
         }
 
-        if (tick % SpawnTicks == 0 && EntitiesToSpawnCount != 0)
+        if (tick % SpawnTicks == 0 && EntitiesToSpawnCount > 0)
         {
             List<Tuple<int, int>> freeTiles = [];
             for (int i = 0; i < FieldSizeX; i++)
@@ -262,7 +258,8 @@ public class Field
             }
         }
 
-        if (enemiesAreDefeated && EntitiesToSpawnCount == 0) Status = "Enemies are defeated!";
+        if (enemiesAreDefeated && EntitiesToSpawnCount == 0) 
+            Status = "Enemies are defeated!";
     }
 
     public void SubscribeToEntity(BaseEntity entity)

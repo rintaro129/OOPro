@@ -56,7 +56,6 @@ public abstract class BaseEntity
 
     public abstract void ProcessTurn();
     public abstract bool IsSolid();
-    public bool IsExplosive() => true;
     public abstract bool IsUnkillable();
 
     public virtual void TakeDamage(int damageTaken = 1)

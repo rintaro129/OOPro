@@ -97,12 +97,8 @@ You can create levels by yourself, read README.md for this!
             }
 
             Console.WriteLine("Press Enter to continue...");
-            while (true)
+            while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
             {
-                if (Console.KeyAvailable)
-                {
-                    if (Console.ReadKey(true).Key == ConsoleKey.Enter) break;
-                }
             }
 
             if (!reachedEnd) 
@@ -117,13 +113,8 @@ You can create levels by yourself, read README.md for this!
             AddGameResult(gameResult);
             Console.WriteLine("Your score has been saved.");
             Console.WriteLine("Press Enter to continue...");
-            while (true)
+            while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
             {
-                if (Console.KeyAvailable)
-                {
-                    if (Console.ReadKey(true).Key == ConsoleKey.Enter)
-                        break;
-                }
             }
         }
     }
@@ -136,13 +127,8 @@ You can create levels by yourself, read README.md for this!
         Console.SetCursorPosition(0, field.FieldSizeY + 5);
         Console.WriteLine(field.Status);
         Console.WriteLine("Press Enter to continue...");
-        while (true)
+        while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
         {
-            if (Console.KeyAvailable)
-            {
-                if (Console.ReadKey(true).Key == ConsoleKey.Enter)
-                    break;
-            }
         }
     }
 

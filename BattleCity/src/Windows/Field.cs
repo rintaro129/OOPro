@@ -211,43 +211,59 @@ public class Field
             Thread.Sleep(speedMs);
         }
     }
-
-    public void ProcessEntities(int tick)
+    private void IterateMovableEntities(int tick)
     {
         foreach (BaseEntity entity in MovableEntities)
         {
             if (FreezeLeftForTicks > 0 && entity is Tank tank && tank != FreezeExceptionTank) continue;
             if (tick % entity.SpeedTicks == 0) entity.ProcessTurn();
         }
+    }
+    private void CheckForSpawn(int tick)
+    {
+        if (tick % SpawnTicks != 0 || EntitiesToSpawnCount <= 0)
+            return;
 
-        if (tick % SpawnTicks == 0 && EntitiesToSpawnCount > 0)
+        Tuple<int, int> freeTile = GetFreeTile();
+
+        if (freeTile == Tuple.Create(-1, -1)) 
+            return; // When no free tiles
+
+        Map[freeTile.Item1, freeTile.Item2] = new Spawn(this, freeTile.Item1, freeTile.Item2);
+    }
+    private Tuple<int, int> GetFreeTile()
+    {
+        List<Tuple<int, int>> freeTiles = [];
+        for (int i = 0; i < FieldSizeX; i++)
         {
-            List<Tuple<int, int>> freeTiles = [];
-            for (int i = 0; i < FieldSizeX; i++)
+            for (int j = 0; j < FieldSizeY; j++)
             {
-                for (int j = 0; j < FieldSizeY; j++)
-                {
-                    if (Map[i, j] == null) freeTiles.Add(new Tuple<int, int>(i, j));
-                }
-            }
-
-            if (freeTiles.Count != 0)
-            {
-                Random random = new Random();
-                int randomNumber = random.Next(freeTiles.Count);
-                Map[freeTiles[randomNumber].Item1, freeTiles[randomNumber].Item2] = new Spawn(this,
-                    freeTiles[randomNumber].Item1, freeTiles[randomNumber].Item2);
+                if (Map[i, j] == null) freeTiles.Add(new Tuple<int, int>(i, j));
             }
         }
 
+        if (freeTiles.Count == 0) 
+            return Tuple.Create(-1, -1); // When no free tiles
+
+        Random random = new Random();
+        int randomNumber = random.Next(freeTiles.Count);
+        return freeTiles[randomNumber];
+    }
+    private void DeleteAccumulatedMovableEntities()
+    {
         foreach (BaseEntity entity in entitiesToDelete)
         {
             MovableEntities.Remove(entity);
         }
-
+        entitiesToDelete.Clear();
+    }
+    private void AddAccumulatedMovableEntities()
+    {
         MovableEntities.AddRange(entitiesToAdd);
         entitiesToAdd.Clear();
-        entitiesToDelete.Clear();
+    }
+    private void CheckEnemiesDefeated()
+    {
         bool enemiesAreDefeated = true;
         foreach (BaseEntity entity in MovableEntities)
         {
@@ -258,8 +274,21 @@ public class Field
             }
         }
 
-        if (enemiesAreDefeated && EntitiesToSpawnCount == 0) 
+        if (enemiesAreDefeated && EntitiesToSpawnCount == 0)
             Status = "Enemies are defeated!";
+
+    }
+    public void ProcessEntities(int tick)
+    {
+        IterateMovableEntities(tick);
+
+        CheckForSpawn(tick);
+
+        DeleteAccumulatedMovableEntities();
+        
+        AddAccumulatedMovableEntities();
+
+        CheckEnemiesDefeated();
     }
 
     public void SubscribeToEntity(BaseEntity entity)

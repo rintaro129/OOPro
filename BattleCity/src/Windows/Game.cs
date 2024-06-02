@@ -4,52 +4,22 @@ using System.Text;
 
 namespace BattleCity;
 
-public class Game
+public class Game(BaseIO IO)
 {
+    public BaseIO IO { get; } = IO;
     private const int tickSeconds = 25;
-    private string name { get; set; }
+    public string Name { get; set; }
     public const string ResDirectory = "res";
 
 
     public void Start()
     {
-        Console.CursorVisible = false;
-        Console.OutputEncoding = Encoding.Unicode;
-        Console.Clear();
-        Console.WriteLine("What's your name?");
-        name = Console.ReadLine();
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine(@$"Welcome in Battle City, {name}
-Destroy all the enemy tanks!
-Collect prizes!
-Avoid bullets!
-Don't explode by bombs!
-And pass all the levels!
-You can create levels by yourself, read README.md for this!
- 
- - To start the campaign type 'campaign' (without quotation marks)
- - To view the Scoreboard type 'scoreboard'
- - To start random mode type 'random'
- - To quit type 'quit'");
-            string option = Console.ReadLine();
-            switch (option)
-            {
-                case "campaign":
-                    StartCampaign();
-                    break;
-                case "scoreboard":
-                    ViewScoreboard();
-                    break;
-                case "random":
-                    StartRandomMode();
-                    break;
-            }
-
-            if (option == "quit") 
-                break;
-        }
+        IO.AskName();
+        StartMenu();
+    }
+    public void StartMenu()
+    {
+        IO.ShowStartMenu();
     }
 
     private string[] GetLevelPaths()
@@ -71,11 +41,11 @@ You can create levels by yourself, read README.md for this!
         { 
         }
     }
-    private void StartCampaign()
+    public void StartCampaign()
     {
         string[] levelPaths = GetLevelPaths();
-        Field field = new Field();
-        GameResult gameResult = new GameResult() { Name = name, Level = "0", Score = 0 };
+        Field field = new Field(IO);
+        GameResult gameResult = new GameResult() { Name = Name, Level = "0", Score = 0 };
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
         foreach (string filepath in levelPaths)
@@ -110,9 +80,9 @@ You can create levels by yourself, read README.md for this!
         PressEnter();
     }
 
-    private void StartRandomMode()
+    public void StartRandomMode()
     {
-        Field field = new Field();
+        Field field = new Field(IO);
         field.StartRandom();
         field.Play(tickSeconds);
         Console.SetCursorPosition(0, field.FieldSizeY + 5);
@@ -120,24 +90,14 @@ You can create levels by yourself, read README.md for this!
         PressEnter();
     }
 
-    private void ViewScoreboard()
+    public void ViewScoreboard()
     {
-        Console.Clear();
-        Console.WriteLine("Scoreboard");
         List<GameResult> gameResults = GetListGameResults();
         gameResults.Sort();
-        Console.WriteLine("{0, -15} {1, -20} {2, -10} {3, -20}\n", "Name", "Level", "Score", "Time Elapsed");
-        foreach (GameResult gameResult in gameResults)
-        {
-            Console.WriteLine("{0, -15} {1, -20} {2, -10} {3, -20:mm\\:ss}", 
-                gameResult.Name, gameResult.Level, gameResult.Score, gameResult.TimeElapsed);
-        }
-
-        Console.WriteLine("\n Press any key to continue...");
-        Console.ReadKey();
+        IO.ShowScoreboard(gameResults);
     }
 
-    private List<GameResult> GetListGameResults()
+    public List<GameResult> GetListGameResults()
     {
         string filePath = Path.Combine(ResDirectory, "Scoreboard.json");
         if (!File.Exists(filePath))

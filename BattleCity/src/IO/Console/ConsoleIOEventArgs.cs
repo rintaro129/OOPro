@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace BattleCity;
 
-public class VisualEntityEventArgs : EventArgs
+public class ConsoleIOEventArgs : EventArgs
 {
     public char Sprite { get; set; } = ' ';
     public ConsoleColor Color { get; set; } = ConsoleColor.White;
@@ -11,7 +11,7 @@ public class VisualEntityEventArgs : EventArgs
     public int Y { get; set; }
     public BaseEntity Entity { get; }
 
-    public VisualEntityEventArgs(BaseEntity entity)
+    public ConsoleIOEventArgs(BaseEntity entity)
     {
         Entity = entity;
         SetSprite(entity);
@@ -139,7 +139,7 @@ public class VisualEntityEventArgs : EventArgs
         }
     }
 
-    public VisualEntityEventArgs(int x, int y)
+    public ConsoleIOEventArgs(int x, int y)
     {
         X = x;
         Y = y;

@@ -5,9 +5,10 @@ namespace BattleCity;
 
 public class Field
 {
-    public Field()
+    public Field(BaseIO IO)
     {
-        ConsoleIO.ConnectVisuals(this);
+        this.IO = IO;
+        IO.ConnectIO(this);
     }
 
     public event EventHandler? EntityCreated;
@@ -15,6 +16,7 @@ public class Field
     public event EventHandler? LevelStarting;
     public event EventHandler? LevelStarted;
     public string Name { get; set; }
+    public BaseIO IO { get; }
     public int FieldSizeX { get; set; }
     public int FieldSizeY { get; set; }
     public BaseEntity?[,] Map { get; set; }
@@ -302,9 +304,9 @@ public class Field
         entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
         if (entity is Player player) 
-            ConsoleIO.SubscribeToPlayer(player);
+            IO.SubscribeToPlayer(player);
         if (entity is Spawn spawn) 
-            ConsoleIO.SubscribeToSpawn(spawn);
+            IO.SubscribeToSpawn(spawn);
     }
 
     private void HandleEntityCreated(object? sender, EventArgs e)
@@ -314,7 +316,7 @@ public class Field
         Map[entity.X, entity.Y] = entity;
         if (entity.CanProcessTurn())
             entitiesToAdd.Add(entity);
-        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+        EntityCreated?.Invoke(this, new ConsoleIOEventArgs(entity));
     }
 
     private void HandleEntityDied(object? sender, EventArgs e)
@@ -326,7 +328,7 @@ public class Field
             entitiesToDelete.Add(entity);
         if (entity is Player)
             Status = "Player Died :(";
-        EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
+        EntityDeleted?.Invoke(this, new ConsoleIOEventArgs(entity));
         if (entity is Tank or Obstacle)
             Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
         if (entity is Spawn)
@@ -338,19 +340,19 @@ public class Field
         if (sender is not BaseEntity entity)
             throw new ArgumentException();
         Map[entity.X, entity.Y] = entity;
-        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+        EntityCreated?.Invoke(this, new ConsoleIOEventArgs(entity));
         int xInvertDifference, yInvertDifference;
         (xInvertDifference, yInvertDifference) = DirectionUtils.ToInts(DirectionUtils.Invert(entity.Direction));
         int x = entity.X + xInvertDifference;
         int y = entity.Y + yInvertDifference;
         Map[x, y] = null;
-        EntityDeleted?.Invoke(this, new VisualEntityEventArgs(x, y));
+        EntityDeleted?.Invoke(this, new ConsoleIOEventArgs(x, y));
     }
 
     private void HandleEntityUpdated(object? sender, EventArgs e)
     {
         if (sender is not BaseEntity entity)
             throw new ArgumentException();
-        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+        EntityCreated?.Invoke(this, new ConsoleIOEventArgs(entity));
     }
 }

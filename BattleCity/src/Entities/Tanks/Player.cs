@@ -31,30 +31,26 @@ public class Player : Tank
             return;
         WasDamaged = false;
         OnUpdated(EventArgs.Empty);
-        if (!Console.KeyAvailable)
-        {
-            return;
-        }
-        ConsoleKeyInfo key = Console.ReadKey(true);
+        string key = Field.IO.AskForInput();
 
-        switch (key.Key)
+        switch (key)
         {
-            case ConsoleKey.UpArrow:
+            case "up":
                 Move(0, -1);
                 break;
-            case ConsoleKey.DownArrow:
+            case "down":
                 Move(0, 1);
                 break;
-            case ConsoleKey.LeftArrow:
+            case "left":
                 Move(-1, 0);
                 break;
-            case ConsoleKey.RightArrow:
+            case "right":
                 Move(1, 0);
                 break;
-            case ConsoleKey.S:
+            case "shoot":
                 Shoot();
                 break;
-            case ConsoleKey.Escape:
+            case "escape":
                 Field.Status = "Escaped";
                 break;
         }

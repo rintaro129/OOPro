@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Xml.Linq;
 
@@ -52,7 +53,7 @@ public class ConsoleIO : BaseIO
 
     private void HandleEntityCreated(object? sender, EventArgs e)
     {
-        if (e is not ConsoleIOEventArgs args)
+        if (e is not IOEventArgs args)
         {
             return;
         }
@@ -65,7 +66,7 @@ public class ConsoleIO : BaseIO
 
     private void HandleEntityDeleted(object? sender, EventArgs e)
     {
-        if (e is not ConsoleIOEventArgs args)
+        if (e is not IOEventArgs args)
         {
             return;
         }
@@ -98,7 +99,7 @@ public class ConsoleIO : BaseIO
 
     private void HandleSpawnTriggered(object? sender, EventArgs e)
     {
-        if (sender is not Spawn spawn || e is not ConsoleIOEventArgs ve)
+        if (sender is not Spawn spawn || e is not IOEventArgs ve)
             return;
         Console.SetCursorPosition(0, spawn.Field.FieldSizeY + SPAWN_INFO_LINE);
         Console.ResetColor();
@@ -207,4 +208,36 @@ You can create levels by yourself, read README.md for this!
         }
         return "";
     }
+
+    public override void ShowLevelFinishedMessage(Field field)
+    {
+        Console.SetCursorPosition(0, field.FieldSizeY + 5);
+        Console.WriteLine(field.Status);
+        switch (field.Status)
+        {
+            case "Escaped":
+            case "Player Died :(":
+                Console.WriteLine("Your score has been saved.");
+                PressEnter();
+                return;
+            case "Enemies are defeated!":
+                Console.WriteLine("Onto the next level...");
+                PressEnter();
+                break;
+        }
+    }
+    public void PressEnter()
+    {
+        Console.WriteLine("Press Enter to continue...");
+        while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
+        {
+        }
+    }
+    public override void ShowCongratulation()
+    {
+        Console.WriteLine("Congratulations! You have beaten all the levels!");
+        Console.WriteLine("Your score has been saved.");
+        PressEnter();
+    }
+
 }

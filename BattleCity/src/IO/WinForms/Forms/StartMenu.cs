@@ -12,7 +12,7 @@ namespace BattleCity
         public string ExitStatus;
         private Game Game { get; }
 
-        private void scoreboard_Click(object sender, EventArgs e)
+        private void Scoreboard_Click(object sender, EventArgs e)
         {
             ExitStatus = "scoreboard";
             this.Close();
@@ -27,6 +27,18 @@ namespace BattleCity
             {
                 e.Cancel = true;
             }
+        }
+
+        private void Campaign_Click(object sender, EventArgs e)
+        {
+            ExitStatus = "campaign";
+            this.Close();
+        }
+
+        private void Random_Click(object sender, EventArgs e)
+        {
+            ExitStatus = "random";
+            this.Close();
         }
     }
 }

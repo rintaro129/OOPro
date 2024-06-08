@@ -53,8 +53,6 @@ public class Game(BaseIO IO)
             field.Start(filepath, gameResult.Score);
             field.Play(tickSeconds);
             gameResult.Score += field.Player.Score;
-            Console.SetCursorPosition(0, field.FieldSizeY + 5);
-            Console.WriteLine(field.Status);
             switch (field.Status)
             {
                 case "Escaped":
@@ -62,22 +60,18 @@ public class Game(BaseIO IO)
                     stopwatch.Stop();
                     gameResult.TimeElapsed = stopwatch.Elapsed;
                     AddGameResult(gameResult);
-                    Console.WriteLine("Your score has been saved.");
-                    PressEnter();
+                    IO.ShowLevelFinishedMessage(field);
                     return;
                 case "Enemies are defeated!":
                     gameResult.Level = Path.GetFileNameWithoutExtension(filepath);
-                    Console.WriteLine("Onto the next level...");
-                    PressEnter();
                     break;
             }
+            IO.ShowLevelFinishedMessage(field);
         }
-        Console.WriteLine("Congratulations! You have beaten all the levels!");
         stopwatch.Stop();
         gameResult.TimeElapsed = stopwatch.Elapsed;
         AddGameResult(gameResult);
-        Console.WriteLine("Your score has been saved.");
-        PressEnter();
+        IO.ShowCongratulation();
     }
 
     public void StartRandomMode()
@@ -85,9 +79,7 @@ public class Game(BaseIO IO)
         Field field = new Field(IO);
         field.StartRandom();
         field.Play(tickSeconds);
-        Console.SetCursorPosition(0, field.FieldSizeY + 5);
-        Console.WriteLine(field.Status);
-        PressEnter();
+        IO.ShowLevelFinishedMessage(field);
     }
 
     public void ViewScoreboard()

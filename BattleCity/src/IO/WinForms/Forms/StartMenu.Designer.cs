@@ -29,43 +29,45 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StartMenu));
-            campaign = new Button();
-            random = new Button();
-            scoreboard = new Button();
+            Campaign = new Button();
+            Random = new Button();
+            Scoreboard = new Button();
             pictureBox1 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
-            // campaign
+            // Campaign
             // 
-            campaign.Anchor = AnchorStyles.None;
-            campaign.Location = new Point(213, 175);
-            campaign.Name = "campaign";
-            campaign.Size = new Size(173, 30);
-            campaign.TabIndex = 0;
-            campaign.Text = "Campaign";
-            campaign.UseVisualStyleBackColor = true;
+            Campaign.Anchor = AnchorStyles.None;
+            Campaign.Location = new Point(213, 175);
+            Campaign.Name = "Campaign";
+            Campaign.Size = new Size(173, 30);
+            Campaign.TabIndex = 0;
+            Campaign.Text = "Campaign";
+            Campaign.UseVisualStyleBackColor = true;
+            Campaign.Click += Campaign_Click;
             // 
-            // random
+            // Random
             // 
-            random.Anchor = AnchorStyles.None;
-            random.Location = new Point(213, 247);
-            random.Name = "random";
-            random.Size = new Size(173, 30);
-            random.TabIndex = 2;
-            random.Text = "Random";
-            random.UseVisualStyleBackColor = true;
+            Random.Anchor = AnchorStyles.None;
+            Random.Location = new Point(213, 247);
+            Random.Name = "Random";
+            Random.Size = new Size(173, 30);
+            Random.TabIndex = 2;
+            Random.Text = "Random";
+            Random.UseVisualStyleBackColor = true;
+            Random.Click += Random_Click;
             // 
-            // scoreboard
+            // Scoreboard
             // 
-            scoreboard.Anchor = AnchorStyles.None;
-            scoreboard.Location = new Point(213, 211);
-            scoreboard.Name = "scoreboard";
-            scoreboard.Size = new Size(173, 30);
-            scoreboard.TabIndex = 1;
-            scoreboard.Text = "Scoreboard";
-            scoreboard.UseVisualStyleBackColor = true;
-            scoreboard.Click += scoreboard_Click;
+            Scoreboard.Anchor = AnchorStyles.None;
+            Scoreboard.Location = new Point(213, 211);
+            Scoreboard.Name = "Scoreboard";
+            Scoreboard.Size = new Size(173, 30);
+            Scoreboard.TabIndex = 1;
+            Scoreboard.Text = "Scoreboard";
+            Scoreboard.UseVisualStyleBackColor = true;
+            Scoreboard.Click += Scoreboard_Click;
             // 
             // pictureBox1
             // 
@@ -86,9 +88,9 @@
             BackgroundImageLayout = ImageLayout.Center;
             ClientSize = new Size(584, 361);
             Controls.Add(pictureBox1);
-            Controls.Add(scoreboard);
-            Controls.Add(random);
-            Controls.Add(campaign);
+            Controls.Add(Scoreboard);
+            Controls.Add(Random);
+            Controls.Add(Campaign);
             MinimumSize = new Size(600, 400);
             Name = "StartMenu";
             StartPosition = FormStartPosition.Manual;
@@ -100,9 +102,9 @@
 
         #endregion
 
-        private Button campaign;
-        private Button random;
-        private Button scoreboard;
+        private Button Campaign;
+        private Button Random;
+        private Button Scoreboard;
         private PictureBox pictureBox1;
     }
 }

@@ -16,4 +16,6 @@ public abstract class BaseIO
     public abstract void ShowStartMenu();
     public abstract void ShowScoreboard(List<GameResult> gameResults);
     public abstract string AskForInput();
+    public abstract void ShowLevelFinishedMessage(Field field);
+    public abstract void ShowCongratulation();
 }

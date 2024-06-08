@@ -85,7 +85,7 @@ partial class ScoreboardForm
         Controls.Add(label1);
         Name = "ScoreboardForm";
         StartPosition = FormStartPosition.Manual;
-        Text = "Scoreboard";
+        Text = "BattleCity";
         FormClosing += ScoreboardForm_FormClosing;
         ((System.ComponentModel.ISupportInitialize)ScoreboardTable).EndInit();
         ResumeLayout(false);

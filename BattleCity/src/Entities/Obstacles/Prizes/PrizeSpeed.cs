@@ -7,5 +7,7 @@ public class PrizeSpeed(Field field, int x, int y) : Prize(field, x, y)
     {
         if (tank.SpeedTicks >= 2)
             tank.SpeedTicks /= 2;
+        HasGrantedPrize = true;
+        OnDied(EventArgs.Empty);
     }
 }

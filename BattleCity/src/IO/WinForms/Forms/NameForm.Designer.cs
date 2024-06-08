@@ -81,7 +81,7 @@ partial class NameForm
         Controls.Add(label1);
         Name = "NameForm";
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "Enter Name";
+        Text = "BattleCity";
         FormClosing += NameForm_FormClosing;
         ResumeLayout(false);
         PerformLayout();

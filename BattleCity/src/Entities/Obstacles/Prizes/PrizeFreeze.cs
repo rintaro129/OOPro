@@ -7,5 +7,7 @@ public class PrizeFreeze(Field field, int x, int y) : Prize(field, x, y)
     {
         Field.FreezeLeftForTicks = 200;
         Field.FreezeExceptionTank = tank;
+        HasGrantedPrize = true;
+        OnDied(EventArgs.Empty);
     }
 }

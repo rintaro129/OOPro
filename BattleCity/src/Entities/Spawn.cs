@@ -38,7 +38,7 @@ public class Spawn(Field field, int x, int y) : BaseEntity(field, x, y)
                 break;
         }
 
-        SpawnTriggered?.Invoke(this, new VisualEntityEventArgs(Field.Map[X, Y]));
+        SpawnTriggered?.Invoke(this, new IOEventArgs(Field.Map[X, Y]));
     }
 
     public override void ProcessTurn()

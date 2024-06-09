@@ -5,16 +5,20 @@ namespace BattleCity;
 
 public class Field
 {
-    public Field()
+    public Field(BaseIO IO)
     {
-        ConsoleIO.ConnectVisuals(this);
+        this.IO = IO;
+        IO.ConnectIO(this);
     }
 
     public event EventHandler? EntityCreated;
     public event EventHandler? EntityDeleted;
+    public event EventHandler? EntityMoved;
     public event EventHandler? LevelStarting;
     public event EventHandler? LevelStarted;
+    public event EventHandler? SizeSet;
     public string Name { get; set; }
+    public BaseIO IO { get; }
     public int FieldSizeX { get; set; }
     public int FieldSizeY { get; set; }
     public BaseEntity?[,] Map { get; set; }
@@ -29,8 +33,8 @@ public class Field
     private List<BaseEntity> entitiesToAdd { get; } = [];
     private const int minWidth = 20;
     private const int minHeight = 10;
-    private const int maxWidth = 70;
-    private const int maxHeight = 25;
+    private const int maxWidth = 49;
+    private const int maxHeight = 30;
 
     private (int, int) getLevelSize(string filePath)
     {
@@ -136,6 +140,7 @@ public class Field
         (FieldSizeX, FieldSizeY) = getLevelSize(filePath);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
         MovableEntities.Clear();
+        SizeSet?.Invoke(this, EventArgs.Empty);
         populateMap(filePath, score);
        
         Status = "Playing";
@@ -147,8 +152,11 @@ public class Field
         LevelStarting?.Invoke(this, EventArgs.Empty);
         Name = "Random Mode";
         Random random = new Random();
-        FieldSizeY = minHeight + random.Next(maxHeight-minHeight);
-        FieldSizeX = minWidth + random.Next(maxWidth-minWidth);
+        /*FieldSizeY = minHeight + random.Next(maxHeight-minHeight);
+        FieldSizeX = minWidth + random.Next(maxWidth-minWidth);*/
+        FieldSizeY = maxHeight;
+        FieldSizeX = maxWidth;
+        SizeSet?.Invoke(this, EventArgs.Empty);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
         MovableEntities.Clear();
         int x = random.Next(FieldSizeX);
@@ -302,9 +310,9 @@ public class Field
         entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
         if (entity is Player player) 
-            ConsoleIO.SubscribeToPlayer(player);
+            IO.SubscribeToPlayer(player);
         if (entity is Spawn spawn) 
-            ConsoleIO.SubscribeToSpawn(spawn);
+            IO.SubscribeToSpawn(spawn);
     }
 
     private void HandleEntityCreated(object? sender, EventArgs e)
@@ -314,7 +322,7 @@ public class Field
         Map[entity.X, entity.Y] = entity;
         if (entity.CanProcessTurn())
             entitiesToAdd.Add(entity);
-        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+        EntityCreated?.Invoke(this, new IOEventArgs(entity));
     }
 
     private void HandleEntityDied(object? sender, EventArgs e)
@@ -326,8 +334,8 @@ public class Field
             entitiesToDelete.Add(entity);
         if (entity is Player)
             Status = "Player Died :(";
-        EntityDeleted?.Invoke(this, new VisualEntityEventArgs(entity));
-        if (entity is Tank or Obstacle)
+        EntityDeleted?.Invoke(this, new IOEventArgs(entity));
+        if ((entity is Tank or Obstacle) &&(entity is not Prize))
             Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
         if (entity is Spawn)
             EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);
@@ -338,19 +346,24 @@ public class Field
         if (sender is not BaseEntity entity)
             throw new ArgumentException();
         Map[entity.X, entity.Y] = entity;
-        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
         int xInvertDifference, yInvertDifference;
         (xInvertDifference, yInvertDifference) = DirectionUtils.ToInts(DirectionUtils.Invert(entity.Direction));
         int x = entity.X + xInvertDifference;
         int y = entity.Y + yInvertDifference;
         Map[x, y] = null;
-        EntityDeleted?.Invoke(this, new VisualEntityEventArgs(x, y));
+        if (IO is WinFormsIO winFormsIO)
+        {
+            EntityMoved?.Invoke(this, new IOEventArgs(entity));
+            return;
+        }
+        EntityCreated?.Invoke(this, new IOEventArgs(entity));
+        EntityDeleted?.Invoke(this, new IOEventArgs(x, y));
     }
 
     private void HandleEntityUpdated(object? sender, EventArgs e)
     {
         if (sender is not BaseEntity entity)
             throw new ArgumentException();
-        EntityCreated?.Invoke(this, new VisualEntityEventArgs(entity));
+        EntityCreated?.Invoke(this, new IOEventArgs(entity));
     }
 }

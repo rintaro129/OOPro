@@ -266,7 +266,7 @@ public class WinFormsIO : BaseIO
     }
     public override void ShowLevelFinishedMessage(Field field)
     {
-        if(field.Name == "Random Mode")
+        if(field.Name.StartsWith("Random"))
         {
             MessageBox.Show(field.Status, field.Status, MessageBoxButtons.OK, MessageBoxIcon.Information);
             LevelForm.ExitStatus = "startmenu";

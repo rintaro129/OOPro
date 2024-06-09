@@ -9,6 +9,7 @@ public class Player : Tank
         StatsUpdated?.Invoke(this, EventArgs.Empty);
     }
     public event EventHandler? StatsUpdated;
+    public override int SpeedTicks { get; set; } = 6;
     public override int HealthPointsCurrent { get; set; } = 2;
     public override int HealthPointsMax { get; set; } = 2;
     public int Score { get; set; }

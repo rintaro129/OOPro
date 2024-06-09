@@ -58,7 +58,7 @@ public class Field
         }
 
         return (maxRowLength, maxColumnLength - 1); // the spawn specifier in the end
-    } 
+    }
 
     private void populateMap(string filePath, int score)
     {
@@ -71,59 +71,64 @@ public class Field
                 for (int col = 0; col < line.Length; col++)
                 {
                     char c = line[col];
-                    switch (c)
+                    if (c == 'n')
                     {
-                        // Check if the character is P, W, or 1
-                        case 'P':
-                            Player = new Player(this, col, row, score);
-                            Map[col, row] = Player;
-                            break;
-                        case 'W':
-                            Map[col, row] = new BrickWall(this, col, row);
-                            break;
-                        case '1':
-                            Map[col, row] = new EnemyLvl1(this, col, row);
-                            break;
-                        case '2':
-                            Map[col, row] = new EnemyLvl2(this, col, row);
-                            break;
-                        case '3':
-                            Map[col, row] = new EnemyLvl3(this, col, row);
-                            break;
-                        case 'S':
-                            Map[col, row] = new SteelWall(this, col, row);
-                            break;
-                        case 'B':
-                            Map[col, row] = new Bomb(this, col, row);
-                            break;
-                        case 's':
-                            Map[col, row] = new PrizeSpeed(this, col, row);
-                            break;
-                        case 'h':
-                            Map[col, row] = new PrizeHealth(this, col, row);
-                            break;
-                        case 'f':
-                            Map[col, row] = new PrizeFreeze(this, col, row);
-                            break;
-                        case 'n':
-                            string subString = line.Substring(col + 1, line.Length - col - 1);
-                            if (int.TryParse(subString, out int result))
-                            {
-                                EntitiesToSpawnCount = result;
-                                break;
-                            }
-
-                            Console.WriteLine("Unable to parse substring to int.");
-                            throw new Exception();
+                        string subString = line.Substring(col + 1, line.Length - col - 1);
+                        if (int.TryParse(subString, out int result))
+                        {
+                            EntitiesToSpawnCount = result;
+                            continue;
+                        }
+                        Console.WriteLine("Unable to parse substring to int.");
+                        throw new Exception();
                     }
+                    ParseCharacter(c, col, row, score);
                 }
-
                 row++;
             }
         }
 
         MovableEntities.AddRange(entitiesToAdd);
         entitiesToAdd.Clear();
+    }
+    private void ParseCharacter(char c, int col, int row, int score)
+    {
+        switch (c)
+        {
+            // Check if the character is P, W, or 1
+            case 'P':
+                Player = new Player(this, col, row, score);
+                Map[col, row] = Player;
+                break;
+            case 'W':
+                Map[col, row] = new BrickWall(this, col, row);
+                break;
+            case '1':
+                Map[col, row] = new EnemyLvl1(this, col, row);
+                break;
+            case '2':
+                Map[col, row] = new EnemyLvl2(this, col, row);
+                break;
+            case '3':
+                Map[col, row] = new EnemyLvl3(this, col, row);
+                break;
+            case 'S':
+                Map[col, row] = new SteelWall(this, col, row);
+                break;
+            case 'B':
+                Map[col, row] = new Bomb(this, col, row);
+                break;
+            case 's':
+                Map[col, row] = new PrizeSpeed(this, col, row);
+                break;
+            case 'h':
+                Map[col, row] = new PrizeHealth(this, col, row);
+                break;
+            case 'f':
+                Map[col, row] = new PrizeFreeze(this, col, row);
+                break;
+        }
+        return;
     }
 
     public void Start(string filepath, int score = 0)
@@ -142,7 +147,7 @@ public class Field
         MovableEntities.Clear();
         SizeSet?.Invoke(this, EventArgs.Empty);
         populateMap(filePath, score);
-       
+
         Status = "Playing";
         LevelStarted?.Invoke(this, EventArgs.Empty);
     }
@@ -152,61 +157,91 @@ public class Field
         LevelStarting?.Invoke(this, EventArgs.Empty);
         Name = "Random Mode";
         Random random = new Random();
-        /*FieldSizeY = minHeight + random.Next(maxHeight-minHeight);
-        FieldSizeX = minWidth + random.Next(maxWidth-minWidth);*/
-        FieldSizeY = maxHeight;
-        FieldSizeX = maxWidth;
+        FieldSizeY = minHeight + random.Next(maxHeight - minHeight);
+        FieldSizeX = minWidth + random.Next(maxWidth - minWidth);
         SizeSet?.Invoke(this, EventArgs.Empty);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
         MovableEntities.Clear();
-        int x = random.Next(FieldSizeX);
-        int y = random.Next(FieldSizeY);
-        Map[x, y] = new Player(this, x, y, 0);
-        for (int i = 0; i < FieldSizeX; i++)
+        char[,] level = CreateBeatableLevel();
+        for (int i = 0; i < level.GetLength(0); i++)
         {
-            for (int j = 0; j < FieldSizeY; j++)
+            for (int j = 0; j < level.GetLength(1); j++)
             {
-                if (Map[i, j] != null) 
-                    continue;
-                int probability = random.Next(500);
-                switch (probability)
-                {
-                    case < 10:
-                        Map[i, j] = new BrickWall(this, i, j);
-                        break;
-                    case < 15:
-                        Map[i, j] = new SteelWall(this, i, j);
-                        break;
-                    case < 18:
-                        Map[i, j] = new Bomb(this, i, j);
-                        break;
-                    case < 19:
-                        Map[i, j] = new EnemyLvl1(this, i, j);
-                        break;
-                    case < 20:
-                        Map[i, j] = new EnemyLvl2(this, i, j);
-                        break;
-                    case < 21:
-                        Map[i, j] = new EnemyLvl3(this, i, j);
-                        break;
-                    case < 22:
-                        Map[i, j] = new PrizeSpeed(this, i, j);
-                        break;
-                    case < 23:
-                        Map[i, j] = new PrizeHealth(this, i, j);
-                        break;
-                    case < 24:
-                        Map[i, j] = new PrizeFreeze(this, i, j);
-                        break;
-                }
+                ParseCharacter(level[i, j], i, j, 0);
             }
         }
-
         EntitiesToSpawnCount = random.Next(6);
         MovableEntities.AddRange(entitiesToAdd);
         entitiesToAdd.Clear();
         Status = "Playing";
         LevelStarted?.Invoke(this, EventArgs.Empty);
+    }
+    private char[,] CreateBeatableLevel()
+    {
+        Random random = new Random();
+        bool beatable = false;
+        char[,] level = new char[FieldSizeX, FieldSizeY];
+        int z = 0;
+        while (!beatable)
+        {
+            z++;
+            Name = $"Random. Try #{z}";
+            level = new char[FieldSizeX, FieldSizeY];
+            char[] entities = ['W', '1', '2', '3', 'S', 'B', 's', 'h', 'f', ' '];
+            int[] odds = [100, 2, 2, 2, 100, 10, 1, 1, 1, 125];
+            int sum = odds.Sum();
+            for (int i = 0; i < level.GetLength(0); i++)
+            {
+                for (int j = 0; j < level.GetLength(1); j++)
+                {
+                    int randomNumber = random.Next(sum);
+                    for(int k = 0; k < entities.Length; k++)
+                    {
+                        if(randomNumber < odds[k])
+                        {
+                            level[i,j] = entities[k];
+                            break;
+                        }
+                        randomNumber -= odds[k];
+                    }
+                }
+            }
+            int x = random.Next(FieldSizeX);
+            int y = random.Next(FieldSizeY);
+            level[x, y] = 'P';
+            beatable = IsBeatable(level, x, y);
+        }
+        return level;
+    }
+    private bool IsBeatable(char[,] level, int x, int y)
+    {
+        bool res = true;
+        bool[,] used = new bool[FieldSizeX, FieldSizeY];
+        used[x, y] = true;
+        void dfs(int x, int y)
+        {
+            int[][] Directions = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+            foreach (int[] direction in Directions)
+            {
+                int ux = x + direction[0];
+                int uy = y + direction[1];
+                if (!(ux >= 0 && ux < FieldSizeX && uy >= 0 && uy < FieldSizeY)
+                    || level[ux, uy] == 'S'
+                    || used[ux, uy]) continue;
+                used[ux, uy] = true;
+                dfs(ux, uy);
+            }
+        }
+        dfs(x, y);
+        for (int i = 0; i < level.GetLength(0); i++)
+        {
+            for (int j = 0; j < level.GetLength(1); j++)
+            {
+                if (!used[i, j] && level[i, j] != 'S')
+                    res = false;
+            }
+        }
+        return res;
     }
 
     public void Play(int speedMs)
@@ -224,9 +259,9 @@ public class Field
     {
         foreach (BaseEntity entity in MovableEntities)
         {
-            if (FreezeLeftForTicks > 0 && entity is Tank tank && tank != FreezeExceptionTank) 
+            if (FreezeLeftForTicks > 0 && entity is Tank tank && tank != FreezeExceptionTank)
                 continue;
-            if (tick % entity.SpeedTicks == 0) 
+            if (tick % entity.SpeedTicks == 0)
                 entity.ProcessTurn();
         }
     }
@@ -237,7 +272,7 @@ public class Field
 
         Tuple<int, int> freeTile = GetFreeTile();
 
-        if (freeTile == Tuple.Create(-1, -1)) 
+        if (freeTile == Tuple.Create(-1, -1))
             return; // When no free tiles
 
         Map[freeTile.Item1, freeTile.Item2] = new Spawn(this, freeTile.Item1, freeTile.Item2);
@@ -249,12 +284,12 @@ public class Field
         {
             for (int j = 0; j < FieldSizeY; j++)
             {
-                if (Map[i, j] == null) 
+                if (Map[i, j] == null)
                     freeTiles.Add(new Tuple<int, int>(i, j));
             }
         }
 
-        if (freeTiles.Count == 0) 
+        if (freeTiles.Count == 0)
             return Tuple.Create(-1, -1); // When no free tiles
 
         Random random = new Random();
@@ -297,7 +332,7 @@ public class Field
         CheckForSpawn(tick);
 
         DeleteAccumulatedMovableEntities();
-        
+
         AddAccumulatedMovableEntities();
 
         CheckEnemiesDefeated();
@@ -309,9 +344,9 @@ public class Field
         entity.Moved += HandleEntityMoved;
         entity.Updated += HandleEntityUpdated;
         entity.Died += HandleEntityDied;
-        if (entity is Player player) 
+        if (entity is Player player)
             IO.SubscribeToPlayer(player);
-        if (entity is Spawn spawn) 
+        if (entity is Spawn spawn)
             IO.SubscribeToSpawn(spawn);
     }
 
@@ -335,7 +370,7 @@ public class Field
         if (entity is Player)
             Status = "Player Died :(";
         EntityDeleted?.Invoke(this, new IOEventArgs(entity));
-        if ((entity is Tank or Obstacle) &&(entity is not Prize))
+        if ((entity is Tank or Obstacle) && (entity is not Prize))
             Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
         if (entity is Spawn)
             EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);

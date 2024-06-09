@@ -62,7 +62,7 @@ partial class LevelForm
         // 
         LevelNameTextBox.Enabled = false;
         LevelNameTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-        LevelNameTextBox.Font = new Font("Segoe UI", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        LevelNameTextBox.Font = new Font("Segoe UI", 15F, FontStyle.Regular, GraphicsUnit.Point, 0);
         LevelNameTextBox.Location = new Point(1608, 270);
         LevelNameTextBox.Name = "LevelNameTextBox";
         LevelNameTextBox.ReadOnly = true;

@@ -33,8 +33,8 @@ public class Field
     private List<BaseEntity> entitiesToAdd { get; } = [];
     private const int minWidth = 20;
     private const int minHeight = 10;
-    private const int maxWidth = 70;
-    private const int maxHeight = 25;
+    private const int maxWidth = 49;
+    private const int maxHeight = 30;
 
     private (int, int) getLevelSize(string filePath)
     {
@@ -152,8 +152,10 @@ public class Field
         LevelStarting?.Invoke(this, EventArgs.Empty);
         Name = "Random Mode";
         Random random = new Random();
-        FieldSizeY = minHeight + random.Next(maxHeight-minHeight);
-        FieldSizeX = minWidth + random.Next(maxWidth-minWidth);
+        /*FieldSizeY = minHeight + random.Next(maxHeight-minHeight);
+        FieldSizeX = minWidth + random.Next(maxWidth-minWidth);*/
+        FieldSizeY = maxHeight;
+        FieldSizeX = maxWidth;
         SizeSet?.Invoke(this, EventArgs.Empty);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
         MovableEntities.Clear();

@@ -211,6 +211,11 @@ You can create levels by yourself, read README.md for this!
 
     public override void ShowLevelFinishedMessage(Field field)
     {
+        if (field.Name == "Random Mode")
+        {
+            Console.WriteLine(field.Status);
+            return;
+        }
         Console.SetCursorPosition(0, field.FieldSizeY + 5);
         Console.WriteLine(field.Status);
         switch (field.Status)

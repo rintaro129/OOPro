@@ -259,10 +259,34 @@ public class WinFormsIO : BaseIO
     }
     public override void ShowCongratulation()
     {
-        throw new NotImplementedException();
+        MessageBox.Show("Congratulations! You have beaten all the levels!", "Congratulations!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        LevelForm.ExitStatus = "startmenu";
+        LevelForm.Close();
+        Game.StartMenu();
     }
     public override void ShowLevelFinishedMessage(Field field)
     {
-        throw new NotImplementedException();
+        if(field.Name == "Random Mode")
+        {
+            MessageBox.Show(field.Status, field.Status, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            LevelForm.ExitStatus = "startmenu";
+            LevelForm.Close();
+            Game.StartMenu();
+            return;
+        }
+        string addBefore = field.Status + "\n";
+        switch (field.Status)
+        {
+            case "Escaped":
+            case "Player Died :(":
+                MessageBox.Show(addBefore + "Your score has been saved", field.Status, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LevelForm.ExitStatus = "startmenu";
+                LevelForm.Close();
+                Game.StartMenu();
+                return;
+            case "Enemies are defeated!":
+                MessageBox.Show(addBefore + "Your score has been saved", field.Status, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                break;
+        }
     }
 }

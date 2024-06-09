@@ -39,6 +39,9 @@ public partial class LevelForm : Form
         if (result == DialogResult.No)
         {
             e.Cancel = true;
+        } else
+        {
+            Environment.Exit(0);
         }
     }
 

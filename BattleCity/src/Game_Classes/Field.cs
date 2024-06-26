@@ -28,15 +28,15 @@ public class Field
     public int EntitiesToSpawnCount { get; set; }
     public int FreezeLeftForTicks { get; set; }
     public Tank FreezeExceptionTank { get; set; }
-    private const int SpawnTicks = 400;
-    private List<BaseEntity> entitiesToDelete { get; } = [];
-    private List<BaseEntity> entitiesToAdd { get; } = [];
+    private const int spawnTicks = 400;
+    private List<BaseEntity> EntitiesToDelete { get; } = [];
+    private List<BaseEntity> EntitiesToAdd { get; } = [];
     private const int minWidth = 20;
     private const int minHeight = 10;
     private const int maxWidth = 49;
     private const int maxHeight = 30;
 
-    private (int, int) getLevelSize(string filePath)
+    private (int, int) GetLevelSize(string filePath)
     {
         int maxRowLength = 0;
         int maxColumnLength = 0;
@@ -60,7 +60,7 @@ public class Field
         return (maxRowLength, maxColumnLength - 1); // the spawn specifier in the end
     }
 
-    private void populateMap(string filePath, int score)
+    private void PopulateMap(string filePath, int score)
     {
         using (StreamReader reader = new StreamReader(filePath))
         {
@@ -88,8 +88,8 @@ public class Field
             }
         }
 
-        MovableEntities.AddRange(entitiesToAdd);
-        entitiesToAdd.Clear();
+        MovableEntities.AddRange(EntitiesToAdd);
+        EntitiesToAdd.Clear();
     }
     private void ParseCharacter(char c, int col, int row, int score)
     {
@@ -142,11 +142,11 @@ public class Field
             return;
         }
 
-        (FieldSizeX, FieldSizeY) = getLevelSize(filePath);
+        (FieldSizeX, FieldSizeY) = GetLevelSize(filePath);
         Map = new BaseEntity[FieldSizeX, FieldSizeY];
         MovableEntities.Clear();
         SizeSet?.Invoke(this, EventArgs.Empty);
-        populateMap(filePath, score);
+        PopulateMap(filePath, score);
 
         Status = "Playing";
         LevelStarted?.Invoke(this, EventArgs.Empty);
@@ -171,8 +171,8 @@ public class Field
             }
         }
         EntitiesToSpawnCount = random.Next(6);
-        MovableEntities.AddRange(entitiesToAdd);
-        entitiesToAdd.Clear();
+        MovableEntities.AddRange(EntitiesToAdd);
+        EntitiesToAdd.Clear();
         Status = "Playing";
         LevelStarted?.Invoke(this, EventArgs.Empty);
     }
@@ -195,11 +195,11 @@ public class Field
                 for (int j = 0; j < level.GetLength(1); j++)
                 {
                     int randomNumber = random.Next(sum);
-                    for(int k = 0; k < entities.Length; k++)
+                    for (int k = 0; k < entities.Length; k++)
                     {
-                        if(randomNumber < odds[k])
+                        if (randomNumber < odds[k])
                         {
-                            level[i,j] = entities[k];
+                            level[i, j] = entities[k];
                             break;
                         }
                         randomNumber -= odds[k];
@@ -267,7 +267,7 @@ public class Field
     }
     private void CheckForSpawn(int tick)
     {
-        if (tick % SpawnTicks != 0 || EntitiesToSpawnCount <= 0)
+        if (tick % spawnTicks != 0 || EntitiesToSpawnCount <= 0)
             return;
 
         Tuple<int, int> freeTile = GetFreeTile();
@@ -298,16 +298,16 @@ public class Field
     }
     private void DeleteAccumulatedMovableEntities()
     {
-        foreach (BaseEntity entity in entitiesToDelete)
+        foreach (BaseEntity entity in EntitiesToDelete)
         {
             MovableEntities.Remove(entity);
         }
-        entitiesToDelete.Clear();
+        EntitiesToDelete.Clear();
     }
     private void AddAccumulatedMovableEntities()
     {
-        MovableEntities.AddRange(entitiesToAdd);
-        entitiesToAdd.Clear();
+        MovableEntities.AddRange(EntitiesToAdd);
+        EntitiesToAdd.Clear();
     }
     private void CheckEnemiesDefeated()
     {
@@ -356,7 +356,7 @@ public class Field
             throw new ArgumentException();
         Map[entity.X, entity.Y] = entity;
         if (entity.CanProcessTurn())
-            entitiesToAdd.Add(entity);
+            EntitiesToAdd.Add(entity);
         EntityCreated?.Invoke(this, new IOEventArgs(entity));
     }
 
@@ -366,11 +366,12 @@ public class Field
             throw new ArgumentException();
         Map[entity.X, entity.Y] = null;
         if (entity.CanProcessTurn())
-            entitiesToDelete.Add(entity);
+            EntitiesToDelete.Add(entity);
         if (entity is Player)
             Status = "Player Died :(";
         EntityDeleted?.Invoke(this, new IOEventArgs(entity));
-        if ((entity is Tank or Obstacle) && (entity is not Prize))
+        if ((entity is Tank or Obstacle and not Prize) || 
+            (entity is Prize prize && !prize.HasGrantedPrize))
             Map[entity.X, entity.Y] = new Explosion(this, entity.X, entity.Y);
         if (entity is Spawn)
             EntitiesToSpawnCount = Int32.Max(0, EntitiesToSpawnCount - 1);

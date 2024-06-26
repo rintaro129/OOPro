@@ -159,10 +159,22 @@ public class WinFormsIO : BaseIO
         {
             throw new ArgumentException();
         }
-        PictureBox pictureBox = PictureBoxes[args.Entity];
-        pictureBox.Image = Image.FromFile(args.FilePath);
-        pictureBox.Location = new Point(FieldStart.X + TILE_WIDTH * args.X,
-                                    FieldStart.Y + TILE_HEIGHT * args.Y);
+        if (LevelForm.InvokeRequired)
+        {
+            LevelForm.Invoke(new Action(() => {
+                PictureBox pictureBox = PictureBoxes[args.Entity];
+                pictureBox.Image = Image.FromFile(args.FilePath);
+                pictureBox.Location = new Point(FieldStart.X + TILE_WIDTH * args.X,
+                                            FieldStart.Y + TILE_HEIGHT * args.Y);
+            }));
+        } 
+        else
+        {
+            PictureBox pictureBox = PictureBoxes[args.Entity];
+            pictureBox.Image = Image.FromFile(args.FilePath);
+            pictureBox.Location = new Point(FieldStart.X + TILE_WIDTH * args.X,
+                                        FieldStart.Y + TILE_HEIGHT * args.Y);
+        }
     }
     private void HandleEntityDeleted(object? sender, EventArgs e)
     {

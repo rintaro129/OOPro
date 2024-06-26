@@ -34,13 +34,6 @@ public class Game(BaseIO IO)
         gameResults.Add(gameResult);
         SetGameResults(gameResults);
     }
-    public void PressEnter()
-    {
-        Console.WriteLine("Press Enter to continue...");
-        while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Enter)
-        { 
-        }
-    }
     public void StartCampaign()
     {
         string[] levelPaths = GetLevelPaths();
@@ -89,7 +82,7 @@ public class Game(BaseIO IO)
         IO.ShowScoreboard(gameResults);
     }
 
-    public List<GameResult> GetListGameResults()
+    private List<GameResult> GetListGameResults()
     {
         string filePath = Path.Combine(ResDirectory, "Scoreboard.json");
         if (!File.Exists(filePath))
